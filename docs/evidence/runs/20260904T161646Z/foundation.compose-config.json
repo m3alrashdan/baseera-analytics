@@ -1,0 +1,22 @@
+{
+  "$schema": "../../run-result.schema.json",
+  "gateId": "foundation.compose-config",
+  "status": "passed",
+  "startedAt": "2026-09-04T16:16:46Z",
+  "finishedAt": "2026-09-04T16:16:46Z",
+  "command": "docker compose -f compose.yaml -f infra/compose.validate.yml --env-file .env.example config --quiet",
+  "environment": {
+    "dockerCompose": "2.40.3+ds1-0ubuntu1~24.04.1",
+    "runtimeEnvironmentFile": "intentionally removed by syntax-validation overlay",
+    "worktree": "uncommitted implementation work"
+  },
+  "observations": {
+    "exitCode": 0,
+    "rendered": true
+  },
+  "limitations": [
+    "This proves Compose merge/interpolation syntax only; no image was built and no service started.",
+    "The validation overlay removes service env_file references and must not be used at runtime.",
+    "TLS, secrets, health, persistence, resource limits, and production hardening were not verified."
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baseera.local/contracts/result.schema.json",
+  "title": "AnalysisResult",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "resultId",
+    "runId",
+    "status",
+    "coverage",
+    "schema",
+    "data",
+    "unit",
+    "provenance",
+    "warnings"
+  ],
+  "properties": {
+    "resultId": { "type": "string" },
+    "runId": { "type": "string" },
+    "status": { "enum": ["complete", "partial", "empty", "insufficient_data", "denied", "failed"] },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rowsDiscovered", "rowsAccepted", "rowsRejected", "rowsAnalyzed", "sampled"],
+      "properties": {
+        "rowsDiscovered": { "type": "integer", "minimum": 0 },
+        "rowsAccepted": { "type": "integer", "minimum": 0 },
+        "rowsRejected": { "type": "integer", "minimum": 0 },
+        "rowsAnalyzed": { "type": "integer", "minimum": 0 },
+        "sampled": { "type": "boolean" }
+      }
+    },
+    "schema": { "type": "array", "items": { "$ref": "#/$defs/field" } },
+    "data": { "type": "array", "items": { "type": "object" } },
+    "unit": { "type": ["string", "null"] },
+    "provenance": { "$ref": "#/$defs/provenance" },
+    "warnings": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "field": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "type"],
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "enum": ["string", "integer", "number", "date", "datetime", "boolean", "null"] },
+        "unit": { "type": ["string", "null"] }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tenantId", "datasetVersions", "metricVersions", "filters", "period", "executedAt", "checksum"],
+      "properties": {
+        "tenantId": { "type": "string" },
+        "datasetVersions": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+        "metricVersions": { "type": "array", "items": { "type": "string" } },
+        "filters": { "type": "array", "items": { "type": "object" } },
+        "period": { "type": "object" },
+        "executedAt": { "type": "string", "format": "date-time" },
+        "checksum": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}
+

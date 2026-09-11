@@ -1,0 +1,36 @@
+{
+  "name": "baseera",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "workspaces": [
+    "apps/web"
+  ],
+  "scripts": {
+    "dev": "concurrently --kill-others -n api,web,worker -c cyan,green,magenta \"npm run dev:api\" \"npm run dev:web\" \"npm run dev:worker\"",
+    "dev:web": "npm run dev --workspace @baseera/web",
+    "dev:api": "bash scripts/local-api.sh",
+    "dev:worker": "PYTHONPATH=services/api uv run --extra advanced python -m baseera.worker",
+    "local": "bash scripts/local.sh",
+    "build": "npm run build --workspace @baseera/web",
+    "lint": "npm run lint --workspace @baseera/web && uv run ruff check services tests",
+    "format:check": "npm run format:check --workspace @baseera/web && uv run ruff format --check services tests",
+    "typecheck": "npm run typecheck --workspace @baseera/web && uv run mypy services/api/baseera",
+    "test": "npm run test --workspace @baseera/web && uv run pytest",
+    "test:coverage": "npm run test:coverage --workspace @baseera/web && uv run pytest --cov=services/api/baseera --cov-report=term-missing --cov-fail-under=80",
+    "test:e2e": "npm run test:e2e --workspace @baseera/web",
+    "seed": "PYTHONPATH=services/api uv run python -m baseera.seed",
+    "generate:demo": "uv run python scripts/generate_demo.py",
+    "api:openapi": "PYTHONPATH=services/api uv run python scripts/export_openapi.py",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down"
+  },
+  "overrides": {
+    "postcss": "8.5.28",
+    "@playwright/test": "1.63.0",
+    "playwright": "1.63.0"
+  },
+  "devDependencies": {
+    "concurrently": "9.2.4"
+  }
+}

@@ -1,0 +1,7 @@
+# Syntax-validation overlay for environments that intentionally have no runtime .env file.
+# It removes service-level env_file references; it must not be used to launch BASEERA.
+services:
+  api:
+    env_file: !reset []
+  worker:
+    env_file: !reset []

@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baseera.local/schemas/capability-manifest.schema.json",
+  "title": "BASEERA capability manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "generatedAt", "statuses", "capabilities"],
+  "properties": {
+    "$schema": {"type": "string", "minLength": 1},
+    "schemaVersion": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+$", "default": "1.0"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "commit": {"type": ["string", "null"], "pattern": "^[0-9a-f]{7,64}$"},
+    "statuses": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 4,
+      "items": {"$ref": "#/$defs/status"},
+      "allOf": [
+        {"contains": {"const": "implemented_tested"}},
+        {"contains": {"const": "implemented_unverified"}},
+        {"contains": {"const": "configuration_blocked"}},
+        {"contains": {"const": "unimplemented"}}
+      ]
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/capability"}
+    }
+  },
+  "$defs": {
+    "status": {
+      "enum": [
+        "implemented_tested",
+        "implemented_unverified",
+        "configuration_blocked",
+        "unimplemented"
+      ]
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "area", "title", "status", "summary", "evidence", "blockers"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+        "area": {
+          "enum": [
+            "foundation",
+            "frontend",
+            "i18n_accessibility",
+            "authentication",
+            "authorization",
+            "ingestion",
+            "cleaning",
+            "semantic_layer",
+            "analytics",
+            "assistant",
+            "dashboards",
+            "reports",
+            "connectors",
+            "company_modules",
+            "forecasting",
+            "process_optimization",
+            "simulation_causal",
+            "operations",
+            "security",
+            "deployment"
+          ]
+        },
+        "title": {"type": "string", "minLength": 1},
+        "status": {"$ref": "#/$defs/status"},
+        "summary": {"type": "string", "minLength": 1},
+        "dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+          "default": []
+        },
+        "evidence": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/evidence"}
+        },
+        "blockers": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "limitations": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "default": []
+        },
+        "updatedAt": {"type": "string", "format": "date-time"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "path", "status"],
+      "properties": {
+        "kind": {
+          "enum": ["test", "command", "screenshot", "report", "manual_review", "live_check"]
+        },
+        "path": {"type": "string", "minLength": 1},
+        "status": {"enum": ["passed", "failed", "not_run", "blocked"]},
+        "command": {"type": "string"},
+        "executedAt": {"type": ["string", "null"], "format": "date-time"},
+        "notes": {"type": "string"}
+      }
+    }
+  }
+}
+

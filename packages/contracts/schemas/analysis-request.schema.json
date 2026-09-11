@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baseera.local/contracts/analysis-request.schema.json",
+  "title": "AnalysisRequest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "question",
+    "datasetVersions",
+    "metricIds",
+    "dimensions",
+    "filters",
+    "period",
+    "timezone",
+    "requestedOutput"
+  ],
+  "properties": {
+    "question": { "type": "string", "minLength": 1, "maxLength": 2000 },
+    "datasetVersions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "metricIds": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_.-]+$" },
+      "uniqueItems": true
+    },
+    "dimensions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true
+    },
+    "filters": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/filter" }
+    },
+    "period": { "$ref": "#/$defs/period" },
+    "timezone": { "type": "string", "default": "Asia/Amman" },
+    "requestedOutput": {
+      "type": "array",
+      "items": { "enum": ["value", "table", "chart", "finding", "report_patch"] },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  },
+  "$defs": {
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["field", "operator", "value"],
+      "properties": {
+        "field": { "type": "string" },
+        "operator": { "enum": ["eq", "neq", "in", "not_in", "gte", "lte", "between", "is_null"] },
+        "value": {}
+      }
+    },
+    "period": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end", "grain"],
+      "properties": {
+        "start": { "type": "string", "format": "date" },
+        "end": { "type": "string", "format": "date" },
+        "grain": { "enum": ["day", "week", "month", "quarter", "year"] },
+        "comparisonStart": { "type": ["string", "null"], "format": "date" },
+        "comparisonEnd": { "type": ["string", "null"], "format": "date" }
+      }
+    }
+  }
+}
+

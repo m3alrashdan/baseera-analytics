@@ -1,0 +1,872 @@
+{
+  "$schema": "./docs/capability-manifest.schema.json",
+  "generatedAt": "2026-09-05T23:03:27Z",
+  "statuses": [
+    "implemented_tested",
+    "implemented_unverified",
+    "configuration_blocked",
+    "unimplemented"
+  ],
+  "capabilities": [
+    {
+      "id": "auth.local",
+      "area": "authentication",
+      "title": "auth — local",
+      "status": "implemented_tested",
+      "summary": "Scoped local sessions, password hashing, CSRF, origin checks and revocation.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Known demo credentials are local-only; no enterprise identity flow."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "auth.oidc",
+      "area": "authentication",
+      "title": "auth — oidc",
+      "status": "unimplemented",
+      "summary": "OIDC adapter/PKCE/membership provisioning are not implemented.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "OIDC adapter/PKCE/membership provisioning are not implemented."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "i18n.ar_en",
+      "area": "i18n_accessibility",
+      "title": "i18n — ar en",
+      "status": "implemented_tested",
+      "summary": "Arabic RTL and English LTR interfaces and locale-aware number presentation.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/browser-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Desktop/mobile journeys tested; no complete screen-reader or 200% zoom certification."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "theme.light_dark",
+      "area": "frontend",
+      "title": "theme — light dark",
+      "status": "implemented_tested",
+      "summary": "Persistent light/dark modes with responsive executive and live workspaces.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/browser-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Selected visual states inspected, not every page/state."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "file.csv",
+      "area": "ingestion",
+      "title": "file — csv",
+      "status": "implemented_tested",
+      "summary": "Bounded CSV ingestion with identifier preservation and rejected-row metadata.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "25 MiB upload limit; no arbitrary delimiter UI or background parser isolation."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "file.tsv",
+      "area": "ingestion",
+      "title": "file — tsv",
+      "status": "implemented_tested",
+      "summary": "Bounded tab-separated ingestion.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Shares synchronous upload limits."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "file.xlsx",
+      "area": "ingestion",
+      "title": "file — xlsx",
+      "status": "implemented_tested",
+      "summary": "XLSX ingestion with sheet inventory and explicit formula-cache warnings.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "First visible nonempty sheet selected; formulas are never executed; no sheet/range picker."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "file.json",
+      "area": "ingestion",
+      "title": "file — json",
+      "status": "implemented_tested",
+      "summary": "Record-array JSON ingestion and full accepted-row profiling.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No arbitrary JSONPath selection or canonical entity mapping."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "file.jsonl",
+      "area": "ingestion",
+      "title": "file — jsonl",
+      "status": "implemented_tested",
+      "summary": "JSONL/NDJSON ingestion with line-level rejection reporting.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Bounded synchronous ingestion."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "file.parquet",
+      "area": "ingestion",
+      "title": "file — parquet",
+      "status": "implemented_tested",
+      "summary": "Bounded Parquet record ingestion with identifier preservation.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No predicate pushdown or arbitrary row-group UI."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "file.xls",
+      "area": "ingestion",
+      "title": "file — xls",
+      "status": "unimplemented",
+      "summary": "Capability file.xls is tracked against executable evidence.",
+      "evidence": [],
+      "blockers": [
+        "Legacy XLS requires conversion to XLSX or CSV"
+      ],
+      "limitations": [
+        "Convert legacy workbooks to XLSX or CSV before ingestion."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "document.pdf_ocr",
+      "area": "ingestion",
+      "title": "document — pdf ocr",
+      "status": "unimplemented",
+      "summary": "PDF ingestion/OCR is not implemented; PDF report export is separate.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "PDF ingestion/OCR is not implemented; PDF report export is separate."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "profile.full_scope",
+      "area": "ingestion",
+      "title": "profile — full scope",
+      "status": "implemented_tested",
+      "summary": "Profiles all accepted in-scope rows and records missing/duplicate/type information.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Coverage describes accepted input; rejected rows are not silently included."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "cleaning.versioned",
+      "area": "cleaning",
+      "title": "cleaning — versioned",
+      "status": "implemented_tested",
+      "summary": "Preview, approval, immutable cleaned versions and rollback; concurrent publication uses unique artifact keys and explicit 409 conflicts.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        },
+        {
+          "kind": "test",
+          "path": "docs/evidence/cleaning-concurrency-junit.xml",
+          "status": "passed",
+          "executedAt": "2026-09-06T02:00:43.795354+03:00"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Bounded deterministic recipes, not arbitrary generated transformation code.",
+        "Failed publications can leave unreferenced files; garbage collection is not implemented."
+      ],
+      "updatedAt": "2026-09-05T23:03:27Z"
+    },
+    {
+      "id": "metrics.governed",
+      "area": "semantic_layer",
+      "title": "metrics — governed",
+      "status": "implemented_tested",
+      "summary": "Seven approved company metrics and evidence-bearing uploaded revenue/profit calculations.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No complete editable semantic catalog or arbitrary dimensions; canonical snapshots hash scoped aggregates, not immutable raw-source versions."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "dashboard.executive",
+      "area": "dashboards",
+      "title": "dashboard — executive",
+      "status": "implemented_tested",
+      "summary": "Scoped executive metrics, actual trend data, evidence drawer and persisted versioned dashboards.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/browser-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Historical dashboard widgets/filters are versioned; titles remain current metadata. No drag-and-drop 3D designer."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "reports.versioned",
+      "area": "reports",
+      "title": "reports — versioned",
+      "status": "implemented_tested",
+      "summary": "Evidence-linked report create/patch/history with version conflicts and authorization rechecks.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No collaborative document editor or approval workflow."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "export.html",
+      "area": "reports",
+      "title": "export — html",
+      "status": "implemented_tested",
+      "summary": "Escaped HTML export with immutable evidence references.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No unrestricted model-authored HTML."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "export.pdf",
+      "area": "reports",
+      "title": "export — pdf",
+      "status": "implemented_tested",
+      "summary": "Paginated Unicode PDF export using WeasyPrint and Arabic fonts.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Text/report layout verified; no complex chart-pagination or archival compliance certification."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "export.docx",
+      "area": "reports",
+      "title": "export — docx",
+      "status": "implemented_tested",
+      "summary": "DOCX report export with linked evidence metadata.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Basic report layout, not full-fidelity interactive dashboard conversion."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "export.csv_xlsx",
+      "area": "reports",
+      "title": "export — csv xlsx",
+      "status": "implemented_tested",
+      "summary": "CSV and XLSX exports with evidence references and formula injection protection.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Tabular export, not a full workbook authoring tool."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "assistant.deterministic_tools",
+      "area": "assistant",
+      "title": "assistant — deterministic tools",
+      "status": "implemented_tested",
+      "summary": "Typed LangGraph plan/authorize/execute/render with real metrics, scoped history and fail-closed invalid plans.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No arbitrary SQL/code execution or unbounded autonomous agent; accepted plans are not proof of general model accuracy."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "assistant.hosted",
+      "area": "assistant",
+      "title": "assistant — hosted",
+      "status": "unimplemented",
+      "summary": "Hosted-provider adapter is not implemented and is not required for local Ollama.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "Hosted-provider adapter is not implemented and is not required for local Ollama."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "assistant.ollama",
+      "area": "assistant",
+      "title": "assistant — ollama",
+      "status": "implemented_tested",
+      "summary": "Installed qwen3.5:9b selected for real local bilingual analytics planning without a hosted key.",
+      "evidence": [
+        {
+          "kind": "live_check",
+          "path": "docs/evidence/local-ollama-smoke.json",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Two-query bilingual smoke plus deterministic boundary tests; no full held-out model accuracy evaluation. CPU inference takes tens of seconds."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "connector.postgresql",
+      "area": "connectors",
+      "title": "connector — postgresql",
+      "status": "implemented_tested",
+      "summary": "Read-only PostgreSQL source adapter with keyset pagination, null-watermark rejection and precision preservation.",
+      "evidence": [
+        {
+          "kind": "live_check",
+          "path": "docs/evidence/postgres-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Tested against a disposable local source. Not wired into an end-to-end credential/discovery/mapping/sync UI; no private company source verified."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "connector.mysql",
+      "area": "connectors",
+      "title": "connector — mysql",
+      "status": "unimplemented",
+      "summary": "MySQL source adapter is not implemented.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "MySQL source adapter is not implemented."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "connector.sqlserver",
+      "area": "connectors",
+      "title": "connector — sqlserver",
+      "status": "unimplemented",
+      "summary": "SQL Server source adapter is not implemented.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "SQL Server source adapter is not implemented."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "connector.rest",
+      "area": "connectors",
+      "title": "connector — rest",
+      "status": "implemented_tested",
+      "summary": "Bounded HTTPS REST source adapter with DNS pinning, TLS identity, response/cursor limits and redacted errors.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Mock-transport contract tests only; server-managed secrets and end-to-end fetch integration remain incomplete."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "connector.odoo_json2",
+      "area": "connectors",
+      "title": "connector — odoo json2",
+      "status": "implemented_tested",
+      "summary": "Read-only JSON-2 adapter exposing allow-listed fields_get/search_read and keyset paging.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Mock-transport tests only. No live Odoo endpoint/credentials supplied; end-to-end connector integration incomplete."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "company.customers_sales",
+      "area": "company_modules",
+      "title": "company — customers sales",
+      "status": "implemented_tested",
+      "summary": "Tenant/department-scoped customer and sales read views backed by related seed records.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Read-only analytics module, not a complete CRM or canonical import-mapping workflow."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "company.people_teams",
+      "area": "company_modules",
+      "title": "company — people teams",
+      "status": "implemented_tested",
+      "summary": "Scoped people aggregates/details with protected-field projections.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No individual employee ranking; no HR record management or complete purpose-based consent workflow."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "company.projects_objectives",
+      "area": "company_modules",
+      "title": "company — projects objectives",
+      "status": "implemented_tested",
+      "summary": "Scoped project/objective read views backed by persisted seed records.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No complete portfolio editing workflow."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "company.operations_support",
+      "area": "company_modules",
+      "title": "company — operations support",
+      "status": "implemented_tested",
+      "summary": "Scoped support/operations read views backed by persisted seed records.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No ticket editing or live external help-desk integration."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "company.costs_suppliers",
+      "area": "company_modules",
+      "title": "company — costs suppliers",
+      "status": "implemented_tested",
+      "summary": "Scoped expenses and supplier read views backed by persisted seed records.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "No procurement or payment workflow."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "forecast.baselines",
+      "area": "forecasting",
+      "title": "forecast — baselines",
+      "status": "implemented_tested",
+      "summary": "Naive, seasonal-naive and linear-trend selection with disjoint temporal evaluation and intervals.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Bounded monthly support-demand forecasting on available canonical records; not evidence of predictive accuracy on a real company."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "model.chronos",
+      "area": "forecasting",
+      "title": "model — chronos",
+      "status": "unimplemented",
+      "summary": "Chronos model adapter is not implemented; optional weights are not downloaded.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "Chronos model adapter is not implemented; optional weights are not downloaded."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "model.tabpfn",
+      "area": "forecasting",
+      "title": "model — tabpfn",
+      "status": "unimplemented",
+      "summary": "TabPFN adapter is not implemented; optional weights are not downloaded.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "TabPFN adapter is not implemented; optional weights are not downloaded."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "process.case_based",
+      "area": "process_optimization",
+      "title": "process — case based",
+      "status": "implemented_tested",
+      "summary": "Recorded case-path frequencies and median cycle time.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Not a full process-mining suite or causal bottleneck diagnosis."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "optimization.resources",
+      "area": "process_optimization",
+      "title": "optimization — resources",
+      "status": "implemented_tested",
+      "summary": "Bounded skill/capacity assignment via OR-Tools CP-SAT when installed, with explicit solver status.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Optional advanced dependency; no scheduling/calendar UI or unbounded optimization claim."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "simulation.queue",
+      "area": "simulation_causal",
+      "title": "simulation — queue",
+      "status": "implemented_tested",
+      "summary": "Bounded seeded queue simulation and disclosed input assumptions.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Synthetic scenario, not a validated operational digital twin."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "causal.synthetic",
+      "area": "simulation_causal",
+      "title": "causal — synthetic",
+      "status": "implemented_tested",
+      "summary": "Reproducible randomized difference-in-means with bootstrap interval and assumption labels.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Declared assumptions are not verified; observational requests do not become causal conclusions."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "visualization.3d",
+      "area": "frontend",
+      "title": "visualization — 3d",
+      "status": "unimplemented",
+      "summary": "Interactive 3D visualization is not implemented.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "Interactive 3D visualization is not implemented."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "schedules.monitoring",
+      "area": "operations",
+      "title": "schedules — monitoring",
+      "status": "unimplemented",
+      "summary": "Schedule metadata can be persisted; no cron dispatcher, alert delivery or monitoring execution.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "Schedule metadata can be persisted; no cron dispatcher, alert delivery or monitoring execution."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "decisions.approvals",
+      "area": "operations",
+      "title": "decisions — approvals",
+      "status": "unimplemented",
+      "summary": "Decision records can be persisted; multi-step approvals and execution are not implemented.",
+      "evidence": [],
+      "blockers": [],
+      "limitations": [
+        "Decision records can be persisted; multi-step approvals and execution are not implemented."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "deployment.compose",
+      "area": "deployment",
+      "title": "deployment — compose",
+      "status": "implemented_unverified",
+      "summary": "Host-bound Compose topology and standalone web/API Dockerfiles are present.",
+      "evidence": [
+        {
+          "kind": "command",
+          "path": "docs/evidence/verification-summary.md",
+          "status": "passed",
+          "command": "docker compose config --quiet",
+          "notes": "Configuration only. Images/containers have not completed a full clean-stack runtime check."
+        }
+      ],
+      "blockers": [
+        "Full Docker build/start and backup/restore drill not executed."
+      ],
+      "limitations": [
+        "Host-run API, worker and standalone web tested separately. Linux host-loopback Ollama is not reachable through Docker gateway by default."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "jobs.metric_refresh",
+      "area": "operations",
+      "title": "jobs.metric_refresh",
+      "status": "implemented_tested",
+      "summary": "Durable metric refresh publishes a real scoped result and rechecks current permissions in a separate worker process.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "One worker for local SQLite; no claim of concurrent SQLite claiming safety."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "connector.batch_sync",
+      "area": "connectors",
+      "title": "connector.batch_sync",
+      "status": "implemented_tested",
+      "summary": "Tenant-scoped staged-record publication with idempotency, checkpoints and schema-drift rejection.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Caller supplies bounded records. Not yet automatic remote fetch plus canonical mapping."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "export.json",
+      "area": "reports",
+      "title": "export.json",
+      "status": "implemented_tested",
+      "summary": "JSON export retains exact result references and report-version checksums.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/backend-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Evidence snapshots are not a replacement for immutable raw-source lineage."
+      ],
+      "updatedAt": "2026-09-05T22:50:00Z"
+    }
+  ],
+  "schemaVersion": "1.0"
+}

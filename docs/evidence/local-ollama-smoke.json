@@ -1,0 +1,123 @@
+{
+  "kind": "local_ollama_bilingual_smoke",
+  "startedAt": "2026-09-05T22:50:03.896206+00:00",
+  "finishedAt": "2026-09-05T22:51:00.221619+00:00",
+  "status": "passed",
+  "availability": {
+    "mode": "ollama",
+    "model": "qwen3.5:9b",
+    "status": "available",
+    "live_verified": false,
+    "installed": true,
+    "model_digest": "6488c96fa5faab64bb65cbd30d4289e20e6130ef535a93ef9a49f42eda893ea7",
+    "context_tokens": 4096,
+    "execution": "local",
+    "availability_checked": true
+  },
+  "expected_overview_net_revenue": 1019113.64,
+  "runs": [
+    {
+      "locale": "ar",
+      "question": "اعرض صافي الإيرادات لكل التاريخ المتاح",
+      "status": "completed",
+      "provider": {
+        "mode": "ollama",
+        "model": "qwen3.5:9b",
+        "status": "completed",
+        "live_verified": true,
+        "elapsed_seconds": 35.784,
+        "input_tokens": 267,
+        "output_tokens": 39,
+        "execution": "local",
+        "thinking_exposed": false
+      },
+      "plan": {
+        "action": "metric_query",
+        "metric_ids": [
+          "net_revenue"
+        ],
+        "period": "all_history",
+        "start_date": null,
+        "end_date": null,
+        "horizon": 3,
+        "clarification": ""
+      },
+      "result": {
+        "result_id": "result-cb8e955a393499ef9fd492649b9d79ae",
+        "metric_id": "net_revenue",
+        "status": "completed",
+        "value": 1019113.64,
+        "unit": "JOD",
+        "evidence": {
+          "scope": {
+            "tenant_id": "tenant-demo",
+            "department_ids": null,
+            "start_date": null,
+            "end_date_exclusive": "2026-07-01",
+            "timezone": "Asia/Amman",
+            "as_of": "2026-06-30",
+            "dataset_version_id": null
+          },
+          "input_hash": "cb8e955a393499ef9fd492649b9d79ae107ee8e3004cf8f94bb8dcf9c6d8fefa",
+          "metric_definition_version": 1,
+          "source": "canonical_company"
+        }
+      },
+      "elapsed_seconds": 35.813
+    },
+    {
+      "locale": "en",
+      "question": "Show net revenue for all available history",
+      "status": "completed",
+      "provider": {
+        "mode": "ollama",
+        "model": "qwen3.5:9b",
+        "status": "completed",
+        "live_verified": true,
+        "elapsed_seconds": 20.294,
+        "input_tokens": 264,
+        "output_tokens": 39,
+        "execution": "local",
+        "thinking_exposed": false
+      },
+      "plan": {
+        "action": "metric_query",
+        "metric_ids": [
+          "net_revenue"
+        ],
+        "period": "all_history",
+        "start_date": null,
+        "end_date": null,
+        "horizon": 3,
+        "clarification": ""
+      },
+      "result": {
+        "result_id": "result-cb8e955a393499ef9fd492649b9d79ae",
+        "metric_id": "net_revenue",
+        "status": "completed",
+        "value": 1019113.64,
+        "unit": "JOD",
+        "evidence": {
+          "scope": {
+            "tenant_id": "tenant-demo",
+            "department_ids": null,
+            "start_date": null,
+            "end_date_exclusive": "2026-07-01",
+            "timezone": "Asia/Amman",
+            "as_of": "2026-06-30",
+            "dataset_version_id": null
+          },
+          "input_hash": "cb8e955a393499ef9fd492649b9d79ae107ee8e3004cf8f94bb8dcf9c6d8fefa",
+          "metric_definition_version": 1,
+          "source": "canonical_company"
+        }
+      },
+      "elapsed_seconds": 20.315
+    }
+  ],
+  "limitations": [
+    "Two real queries on a fictional local seed, not a held-out accuracy benchmark.",
+    "Question/history are sent to local Ollama; numerical facts are calculated in Python.",
+    "No throughput, general Arabic accuracy, or production readiness is inferred."
+  ]
+}

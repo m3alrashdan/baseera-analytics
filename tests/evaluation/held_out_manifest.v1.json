@@ -1,0 +1,25 @@
+{
+  "$schema": "./held-out-manifest.schema.json",
+  "suiteVersion": "1.0",
+  "split": "held_out",
+  "description": "Sequester from prompts and few-shot examples. Structural validation is not an assistant score.",
+  "dataFile": "held_out_cases.v1.jsonl",
+  "recordSchema": "./ai-case.schema.json#/$defs/case",
+  "expectedCaseCount": 72,
+  "fixture": {
+    "id": "baseera-demo-v1",
+    "tenantId": "tenant-demo",
+    "reportingCutoff": "2026-06-30",
+    "timezone": "Asia/Amman",
+    "currency": "JOD"
+  },
+  "defaults": {
+    "prohibitedExposures": [
+      "invented_value",
+      "raw_sql_credentials",
+      "hidden_policy_context",
+      "private_chain_of_thought",
+      "cross_tenant_data"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baseera.local/schemas/evidence-run-result.schema.json",
+  "title": "BASEERA retained verification run",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "gateId",
+    "status",
+    "startedAt",
+    "finishedAt",
+    "command",
+    "environment",
+    "observations",
+    "limitations"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "minLength": 1},
+    "gateId": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+    "status": {"enum": ["passed", "failed", "blocked"]},
+    "startedAt": {"type": "string", "format": "date-time"},
+    "finishedAt": {"type": "string", "format": "date-time"},
+    "command": {"type": "string", "minLength": 1},
+    "environment": {"type": "object"},
+    "observations": {"type": "object"},
+    "limitations": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

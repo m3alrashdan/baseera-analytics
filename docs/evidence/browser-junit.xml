@@ -1,0 +1,26 @@
+<testsuites id="" name="" tests="8" failures="0" skipped="0" errors="0" time="11.725774">
+<testsuite name="core-journeys.spec.ts" timestamp="2026-09-05T23:01:01.665Z" hostname="desktop-en" tests="3" failures="0" skipped="0" time="1.702" errors="0">
+<testcase name="English login exposes demo and empty workspace paths" classname="core-journeys.spec.ts" time="0.612">
+</testcase>
+<testcase name="Arabic shell uses RTL and keeps metric IDs isolated" classname="core-journeys.spec.ts" time="0.662">
+</testcase>
+<testcase name="API failure is honest and retryable" classname="core-journeys.spec.ts" time="0.428">
+</testcase>
+</testsuite>
+<testsuite name="live-journey.spec.ts" timestamp="2026-09-05T23:01:01.665Z" hostname="desktop-en" tests="1" failures="0" skipped="0" time="2.91" errors="0">
+<testcase name="live upload → reviewed cleaning → metric → dashboard → versioned export" classname="live-journey.spec.ts" time="2.91">
+</testcase>
+</testsuite>
+<testsuite name="core-journeys.spec.ts" timestamp="2026-09-05T23:01:01.665Z" hostname="mobile-ar" tests="3" failures="0" skipped="0" time="1.692" errors="0">
+<testcase name="English login exposes demo and empty workspace paths" classname="core-journeys.spec.ts" time="0.644">
+</testcase>
+<testcase name="Arabic shell uses RTL and keeps metric IDs isolated" classname="core-journeys.spec.ts" time="0.624">
+</testcase>
+<testcase name="API failure is honest and retryable" classname="core-journeys.spec.ts" time="0.424">
+</testcase>
+</testsuite>
+<testsuite name="live-journey.spec.ts" timestamp="2026-09-05T23:01:01.665Z" hostname="mobile-ar" tests="1" failures="0" skipped="0" time="3.013" errors="0">
+<testcase name="live upload → reviewed cleaning → metric → dashboard → versioned export" classname="live-journey.spec.ts" time="3.013">
+</testcase>
+</testsuite>
+</testsuites>

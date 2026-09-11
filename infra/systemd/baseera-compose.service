@@ -1,0 +1,21 @@
+[Unit]
+Description=BASEERA private-host Compose application
+Documentation=file:/opt/baseera/docs/deployment.md
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/opt/baseera
+Environment=COMPOSE_PROJECT_NAME=baseera
+EnvironmentFile=/etc/baseera/baseera.env
+ExecStartPre=/usr/bin/docker compose -f compose.yaml -f infra/compose.private-vm.yml config --quiet
+ExecStart=/usr/bin/docker compose -f compose.yaml -f infra/compose.private-vm.yml up -d --remove-orphans
+ExecStop=/usr/bin/docker compose -f compose.yaml -f infra/compose.private-vm.yml stop
+TimeoutStartSec=300
+TimeoutStopSec=180
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baseera.local/schemas/ai-evaluation-result.schema.json",
+  "title": "BASEERA assistant evaluation attempt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["caseId", "attempt", "providerMode", "bucket"],
+  "properties": {
+    "caseId": {"type": "string", "pattern": "^(DEV|HO)-(EN|AR)-[A-Z]+-[0-9]{3}$"},
+    "attempt": {"type": "integer", "minimum": 1},
+    "providerMode": {
+      "enum": ["deterministic_double", "local", "hosted_live"]
+    },
+    "provider": {"type": "string"},
+    "modelRevision": {"type": "string"},
+    "bucket": {
+      "enum": [
+        "verified_automatic_completion",
+        "completed_with_human_correction",
+        "correct_abstention",
+        "incorrect_abstention",
+        "failed",
+        "timed_out"
+      ]
+    },
+    "observedOutcome": {
+      "enum": ["answer", "clarify", "abstain_insufficient_data", "deny", "unavailable"]
+    },
+    "numericCorrect": {"type": "boolean"},
+    "evidenceSupported": {"type": "boolean"},
+    "toolExecutionSucceeded": {"type": "boolean"},
+    "clarificationCorrect": {"type": "boolean"},
+    "unsupportedClaim": {"type": "boolean"},
+    "accessPolicyCompliant": {"type": "boolean"},
+    "latencyMs": {"type": "number", "minimum": 0},
+    "toolCount": {"type": "integer", "minimum": 0},
+    "tokenCount": {"type": "integer", "minimum": 0},
+    "costUsd": {"type": "number", "minimum": 0},
+    "resultIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "warnings": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

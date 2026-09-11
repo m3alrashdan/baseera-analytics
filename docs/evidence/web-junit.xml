@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuites name="vitest tests" tests="20" failures="0" errors="0" time="2.00133627">
+    <testsuite name="test/api-client.test.ts" timestamp="2026-09-05T17:26:11.029Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="6" failures="0" errors="0" skipped="0" time="0.053048827">
+        <testcase classname="test/api-client.test.ts" name="API boundary &gt; refreshes a rotated CSRF token once after a pre-execution rejection" time="0.014705151">
+        </testcase>
+        <testcase classname="test/api-client.test.ts" name="API boundary &gt; normalizes the real backend overview without inventing missing series" time="0.026300531">
+        </testcase>
+        <testcase classname="test/api-client.test.ts" name="API boundary &gt; normalizes the backend payload returned by getOverview" time="0.002455277">
+        </testcase>
+        <testcase classname="test/api-client.test.ts" name="API boundary &gt; keeps the HttpOnly session in the cookie and sends the returned CSRF token on mutations" time="0.002394931">
+        </testcase>
+        <testcase classname="test/api-client.test.ts" name="API boundary &gt; adapts an accepted backend upload to the UI contract" time="0.003048341">
+        </testcase>
+        <testcase classname="test/api-client.test.ts" name="API boundary &gt; reads the backend problem envelope" time="0.002427152">
+        </testcase>
+    </testsuite>
+    <testsuite name="test/api-state.test.tsx" timestamp="2026-09-05T17:26:11.032Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="2" failures="0" errors="0" skipped="0" time="0.180226181">
+        <testcase classname="test/api-state.test.tsx" name="ResourceState &gt; explains unavailable and denied results without treating them as empty" time="0.120173211">
+        </testcase>
+        <testcase classname="test/api-state.test.tsx" name="ResourceState &gt; offers a working retry for failed requests" time="0.057995721">
+        </testcase>
+    </testsuite>
+    <testsuite name="test/chart-panel.test.tsx" timestamp="2026-09-05T17:26:11.033Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="2" failures="0" errors="0" skipped="0" time="0.095862798">
+        <testcase classname="test/chart-panel.test.tsx" name="does not interpolate a line across an unobserved period" time="0.080604901">
+        </testcase>
+        <testcase classname="test/chart-panel.test.tsx" name="explains absent chart data" time="0.013338344">
+        </testcase>
+    </testsuite>
+    <testsuite name="test/evidence-drawer.test.tsx" timestamp="2026-09-05T17:26:11.033Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="2" failures="0" errors="0" skipped="0" time="0.310728679">
+        <testcase classname="test/evidence-drawer.test.tsx" name="EvidenceDrawer &gt; exposes provenance and closes with Escape" time="0.14516136">
+        </testcase>
+        <testcase classname="test/evidence-drawer.test.tsx" name="EvidenceDrawer &gt; has no detectable accessibility violations" time="0.163609763">
+        </testcase>
+    </testsuite>
+    <testsuite name="test/i18n.test.ts" timestamp="2026-09-05T17:26:11.034Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="2" failures="0" errors="0" skipped="0" time="0.022775752">
+        <testcase classname="test/i18n.test.ts" name="internationalization &gt; uses real Arabic direction and translated navigation" time="0.002595587">
+        </testcase>
+        <testcase classname="test/i18n.test.ts" name="internationalization &gt; formats values without changing the stored number" time="0.018614012">
+        </testcase>
+    </testsuite>
+    <testsuite name="test/local-assistant.test.tsx" timestamp="2026-09-05T17:26:11.035Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="2" failures="0" errors="0" skipped="0" time="0.437017969">
+        <testcase classname="test/local-assistant.test.tsx" name="uses live model context and resets the server conversation ID for a new conversation" time="0.361800041">
+        </testcase>
+        <testcase classname="test/local-assistant.test.tsx" name="preserves a failed question for retry without inventing a reply" time="0.073779733">
+        </testcase>
+    </testsuite>
+    <testsuite name="test/login-form.test.tsx" timestamp="2026-09-05T17:26:11.036Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="2" failures="0" errors="0" skipped="0" time="0.357426924">
+        <testcase classname="test/login-form.test.tsx" name="LoginForm &gt; keeps field values and shows connected validation messages" time="0.318852202">
+        </testcase>
+        <testcase classname="test/login-form.test.tsx" name="LoginForm &gt; offers an explicitly fictional demo workspace" time="0.036833674">
+        </testcase>
+    </testsuite>
+    <testsuite name="test/overview.test.tsx" timestamp="2026-09-05T17:26:11.036Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="1" failures="0" errors="0" skipped="0" time="0.284370236">
+        <testcase classname="test/overview.test.tsx" name="ExecutiveOverview &gt; opens evidence for a selected KPI without losing the overview" time="0.282753126">
+        </testcase>
+    </testsuite>
+    <testsuite name="test/upload-studio.test.tsx" timestamp="2026-09-05T17:26:11.037Z" hostname="mousa-VivoBook-ASUSLaptop-M1603QA-M1603QA" tests="1" failures="0" errors="0" skipped="0" time="0.259878904">
+        <testcase classname="test/upload-studio.test.tsx" name="UploadStudio &gt; selects a supported file and submits it through the provided uploader" time="0.253724741">
+        </testcase>
+    </testsuite>
+</testsuites>

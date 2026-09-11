@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baseera.local/schemas/held-out-manifest.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "suiteVersion", "split", "description", "dataFile", "recordSchema", "expectedCaseCount", "fixture", "defaults"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "suiteVersion": {"type": "string", "pattern": "^[0-9]+\\.[0-9]+$"},
+    "split": {"const": "held_out"},
+    "description": {"type": "string", "minLength": 1},
+    "dataFile": {"type": "string", "pattern": "^[A-Za-z0-9_.-]+\\.jsonl$"},
+    "recordSchema": {"type": "string", "minLength": 1},
+    "expectedCaseCount": {"type": "integer", "minimum": 60},
+    "fixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "tenantId", "reportingCutoff", "timezone", "currency"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "tenantId": {"type": "string", "minLength": 1},
+        "reportingCutoff": {"type": "string", "format": "date"},
+        "timezone": {"type": "string", "minLength": 1},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"}
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prohibitedExposures"],
+      "properties": {
+        "prohibitedExposures": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

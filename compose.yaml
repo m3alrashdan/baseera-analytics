@@ -1,0 +1,101 @@
+name: baseera
+services:
+  postgres:
+    image: postgres:17.6-alpine
+    environment:
+      POSTGRES_DB: baseera
+      POSTGRES_USER: baseera
+      POSTGRES_PASSWORD: baseera
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U baseera -d baseera"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "127.0.0.1:5543:5432"
+    volumes:
+      - baseera-postgres:/var/lib/postgresql/data
+
+  redis:
+    image: redis:8.2-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "127.0.0.1:6381:6379"
+    volumes:
+      - baseera-redis:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      BASEERA_DATABASE_URL: postgresql+psycopg://baseera:baseera@postgres:5432/baseera
+      BASEERA_REDIS_URL: redis://redis:6379/0
+      BASEERA_ARTIFACT_ROOT: /data/artifacts
+      BASEERA_ALLOWED_ORIGINS: http://localhost:3100,http://127.0.0.1:3100
+      BASEERA_LLM_PROVIDER: ${BASEERA_LLM_PROVIDER:-ollama}
+      BASEERA_LLM_BASE_URL: ${BASEERA_DOCKER_OLLAMA_URL:-http://host.docker.internal:11434}
+      BASEERA_LLM_MODEL: ${BASEERA_LLM_MODEL:-qwen3.5:9b}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health/ready')"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    ports:
+      - "127.0.0.1:8100:8000"
+    volumes:
+      - baseera-artifacts:/data/artifacts
+
+  worker:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+    command: ["python", "-m", "baseera.worker"]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      BASEERA_DATABASE_URL: postgresql+psycopg://baseera:baseera@postgres:5432/baseera
+      BASEERA_REDIS_URL: redis://redis:6379/0
+      BASEERA_ARTIFACT_ROOT: /data/artifacts
+    depends_on:
+      api:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - baseera-artifacts:/data/artifacts
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:3100:3000"
+
+volumes:
+  baseera-postgres:
+  baseera-redis:
+  baseera-artifacts:

@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "generatedAt", "statuses", "entries"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "generatedAt": {"type": "string", "format": "date-time"},
+    "statuses": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"enum": ["passed", "failed", "not_run", "blocked"]}
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "gate", "status", "command", "artifactPaths", "executedAt", "notes"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z][a-z0-9_.-]*$"},
+          "gate": {"type": "string", "minLength": 1},
+          "status": {"enum": ["passed", "failed", "not_run", "blocked"]},
+          "command": {"type": "string", "minLength": 1},
+          "artifactPaths": {"type": "array", "items": {"type": "string"}},
+          "executedAt": {"type": ["string", "null"], "format": "date-time"},
+          "notes": {"type": "string"}
+        }
+      }
+    }
+  }
+}
+

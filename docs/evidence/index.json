@@ -1,0 +1,288 @@
+{
+  "$schema": "./index.schema.json",
+  "generatedAt": "2026-09-05T23:03:27Z",
+  "statuses": [
+    "passed",
+    "failed",
+    "not_run",
+    "blocked"
+  ],
+  "entries": [
+    {
+      "id": "contracts.ai-eval-corpus",
+      "gate": "evaluation",
+      "status": "passed",
+      "command": "uv run python scripts/validate_ai_evals.py",
+      "artifactPaths": [
+        "tests/evaluation/held_out_cases.v1.jsonl",
+        "tests/evaluation/held_out_manifest.v1.json",
+        "docs/evidence/runs/20260904T160912Z/contracts.ai-eval-corpus.json"
+      ],
+      "executedAt": "2026-09-04T16:09:12Z",
+      "notes": "Passed structural/coverage validation: 72 held-out cases, 36 per locale, at least three cases per locale/topic. No assistant or model was executed."
+    },
+    {
+      "id": "foundation.compose-config",
+      "gate": "deployment",
+      "status": "passed",
+      "command": "docker compose config --quiet",
+      "artifactPaths": [
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-05T22:55:59Z",
+      "notes": "Current configuration validated without an overlay; image build and container startup not verified."
+    },
+    {
+      "id": "backend.unit-integration",
+      "gate": "backend",
+      "status": "passed",
+      "command": "uv run --extra advanced pytest -q --cov=services/api/baseera --cov-report=xml:docs/evidence/backend-coverage.xml --junitxml=docs/evidence/backend-junit.xml",
+      "artifactPaths": [
+        "docs/evidence/backend-junit.xml",
+        "docs/evidence/backend-coverage.xml",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-06T02:01:00.336996+03:00",
+      "notes": "106 passed, 3 dedicated live-source cases skipped; 85.31% statement coverage. Those 3 passed separately."
+    },
+    {
+      "id": "frontend.unit",
+      "gate": "frontend",
+      "status": "passed",
+      "command": "npm run test --workspace @baseera/web -- --reporter=default --reporter=junit --outputFile=../../docs/evidence/web-junit.xml",
+      "artifactPaths": [
+        "docs/evidence/web-junit.xml"
+      ],
+      "executedAt": "2026-09-05T17:26:11.029Z",
+      "notes": "20 tests passed in 9 files."
+    },
+    {
+      "id": "frontend.build",
+      "gate": "frontend",
+      "status": "passed",
+      "command": "npm run build --workspace @baseera/web",
+      "artifactPaths": [
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-05T22:55:59Z",
+      "notes": "Production build exited 0; standalone runtime and static assets served on loopback port 3100."
+    },
+    {
+      "id": "journey.import-clean-metric-report",
+      "gate": "integrated_journey",
+      "status": "passed",
+      "command": "See exact production Playwright command in docs/evidence/verification-summary.md",
+      "artifactPaths": [
+        "docs/evidence/browser-junit.xml",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-05T23:01:01.665Z",
+      "notes": "8 passed: 2 real-API journeys on desktop/en and mobile/ar plus 6 contract/mock tests. Value 90 reconciles after reviewed deduplication and survives saved dashboard/report export."
+    },
+    {
+      "id": "correctness.metric-equality",
+      "gate": "analytical_correctness",
+      "status": "passed",
+      "command": "Full pytest suite: tests/backend/test_vertical_slice.py and tests/backend/test_evidence_scope.py",
+      "artifactPaths": [
+        "docs/evidence/backend-junit.xml",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-06T02:01:00.336996+03:00",
+      "notes": "Uploaded result equality and future-dated canonical order cutoff checked across overview/assistant/worker; not complete raw-source lineage."
+    },
+    {
+      "id": "security.cross-tenant",
+      "gate": "security",
+      "status": "passed",
+      "command": "Full pytest suite: auth, evidence-scope and protected-people tests",
+      "artifactPaths": [
+        "docs/evidence/backend-junit.xml",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-06T02:01:00.336996+03:00",
+      "notes": "Negative tenant/department/artifact/result/job/report and demotion checks passed. No claim of complete graph/search/cache security evaluation for unimplemented surfaces."
+    },
+    {
+      "id": "security.injection-boundaries",
+      "gate": "security",
+      "status": "passed",
+      "command": "Full pytest suite: source-adapter, provider, export and auth tests",
+      "artifactPaths": [
+        "docs/evidence/backend-junit.xml",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-06T02:01:00.336996+03:00",
+      "notes": "Typed invalid model plans, SSRF DNS/redirect/response limits, formula-safe exports, PDF fetch denial, CSRF/origin and role checks. Not a full adversarial document/RAG benchmark."
+    },
+    {
+      "id": "resilience.restart-retry-idempotency",
+      "gate": "resilience",
+      "status": "passed",
+      "command": "Full pytest suite: tests/backend/test_resilience_and_exports.py and test_job_execution.py",
+      "artifactPaths": [
+        "docs/evidence/backend-junit.xml",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-06T02:01:00.336996+03:00",
+      "notes": "Persisted stale-heartbeat recovery, cancellation, idempotency and separate worker-process publication passed. No forced-kill chaos or concurrent SQLite worker claim."
+    },
+    {
+      "id": "visual.en-light-desktop",
+      "gate": "visual_accessibility",
+      "status": "not_run",
+      "command": "Playwright screenshot and manual inspection",
+      "artifactPaths": [],
+      "executedAt": null,
+      "notes": "Capture is not approval."
+    },
+    {
+      "id": "visual.ar-dark-mobile",
+      "gate": "visual_accessibility",
+      "status": "passed",
+      "command": "Playwright full-page screenshot followed by image inspection",
+      "artifactPaths": [
+        "docs/evidence/visual/ar-dark-mobile-report.png",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-05T22:50:06.504Z",
+      "notes": "Inspected report forms, Arabic shaping, saved titles, export controls and mobile layout. Comprehensive screen/zoom/keyboard coverage still not run."
+    },
+    {
+      "id": "accessibility.keyboard-zoom",
+      "gate": "visual_accessibility",
+      "status": "not_run",
+      "command": "Playwright keyboard/axe checks plus manual 200% zoom inspection",
+      "artifactPaths": [],
+      "executedAt": null,
+      "notes": "Focus-trap/component tests passed within the unit suite, but full keyboard/axe plus 200% zoom/manual review has not run."
+    },
+    {
+      "id": "exports.arabic-print",
+      "gate": "reports",
+      "status": "passed",
+      "command": "Full pytest suite PDF/Unicode/export tests and generated Arabic sample through pdftotext",
+      "artifactPaths": [
+        "docs/evidence/backend-junit.xml",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-06T02:01:00.336996+03:00",
+      "notes": "Unicode pagination and no external/file/data fetching passed; spreadsheet exports reparsed. Complex chart/table print layouts not comprehensively reviewed."
+    },
+    {
+      "id": "provider.deterministic-double",
+      "gate": "assistant",
+      "status": "passed",
+      "command": "Full pytest suite: tests/assistant/test_local_provider.py",
+      "artifactPaths": [
+        "docs/evidence/backend-junit.xml"
+      ],
+      "executedAt": "2026-09-06T02:01:00.336996+03:00",
+      "notes": "Typed schema, invalid-plan fail-closed behavior, scope, persisted conversations, unavailable-provider and missing-cost behavior passed. Doubles do not prove live model quality."
+    },
+    {
+      "id": "provider.live-smoke",
+      "gate": "assistant",
+      "status": "not_run",
+      "command": "Provider-specific smoke suite",
+      "artifactPaths": [],
+      "executedAt": null,
+      "notes": "Hosted adapter is unimplemented. Local Ollama has a separate passed live-check entry."
+    },
+    {
+      "id": "connector.odoo-live",
+      "gate": "connectors",
+      "status": "blocked",
+      "command": "Odoo JSON-2 handshake/read/schema test",
+      "artifactPaths": [],
+      "executedAt": null,
+      "notes": "Blocked: no authorized Odoo endpoint or credentials were supplied."
+    },
+    {
+      "id": "connector.database-live",
+      "gate": "connectors",
+      "status": "blocked",
+      "command": "Source-specific read-only sync suite",
+      "artifactPaths": [],
+      "executedAt": null,
+      "notes": "Blocked: no authorized private company PostgreSQL/MySQL/SQL Server source supplied. Full connector fetch/mapping integration is also incomplete; disposable local PostgreSQL tests are recorded separately."
+    },
+    {
+      "id": "performance.baseline",
+      "gate": "performance",
+      "status": "passed",
+      "command": "uv run python scripts/performance_smoke.py --url http://127.0.0.1:8100/api/v1/health/ready --provider-mode ollama --output docs/evidence/local-health-smoke.json",
+      "artifactPaths": [
+        "docs/evidence/local-health-smoke.json"
+      ],
+      "executedAt": "2026-09-05T17:14:30.233789Z",
+      "notes": "30 successful HTTP 200 responses. Health endpoint only: p50 8.509 ms, p95 12.761 ms. Representative product load testing remains not run."
+    },
+    {
+      "id": "operations.backup-restore",
+      "gate": "deployment",
+      "status": "not_run",
+      "command": "Isolated backup/restore drill using scripts/backup.sh and scripts/restore.sh",
+      "artifactPaths": [],
+      "executedAt": null,
+      "notes": "Do not test restore against the only copy of valuable data."
+    },
+    {
+      "id": "provider.ollama-live",
+      "gate": "assistant",
+      "command": "uv run --extra advanced python scripts/smoke_local_ollama.py --output docs/evidence/local-ollama-smoke.json",
+      "artifactPaths": [
+        "docs/evidence/local-ollama-smoke.json"
+      ],
+      "notes": "qwen3.5:9b, digest retained; real Arabic/English requests both returned 1019113.64 JOD and identical result IDs, matching overview cutoff. Two-query smoke, not a held-out accuracy benchmark.",
+      "status": "passed",
+      "executedAt": "2026-09-05T22:51:00.221619+00:00"
+    },
+    {
+      "id": "connector.postgresql-local-live",
+      "gate": "connectors",
+      "command": ".venv/bin/pytest -q tests/connectors/test_postgres_live.py --junitxml=docs/evidence/postgres-junit.xml (dedicated DSN injected)",
+      "artifactPaths": [
+        "docs/evidence/postgres-junit.xml"
+      ],
+      "notes": "3 passed against dedicated disposable local PostgreSQL. Not an authorized private-company source or a complete product connector workflow.",
+      "status": "passed",
+      "executedAt": "2026-09-05T20:26:25.455999+03:00"
+    },
+    {
+      "id": "visual.en-dark-desktop",
+      "gate": "visual_accessibility",
+      "command": "Playwright screenshot followed by image inspection",
+      "artifactPaths": [
+        "docs/evidence/visual/en-dark-desktop-overview.png",
+        "docs/evidence/verification-summary.md"
+      ],
+      "notes": "Inspected actual cutoff/metrics/exceptions/empty chart state. Fixed assistant shortcut still occupies the desktop right edge; complete visual/a11y certification not claimed.",
+      "status": "passed",
+      "executedAt": "2026-09-05T22:50:06.504Z"
+    },
+    {
+      "id": "security.npm-audit",
+      "gate": "security",
+      "command": "npm audit --json",
+      "artifactPaths": [
+        "docs/evidence/verification-summary.md"
+      ],
+      "notes": "0 reported vulnerabilities at check time for the locked npm dependency tree. Does not cover application code, Python, OS or container vulnerabilities.",
+      "status": "passed",
+      "executedAt": "2026-09-05T22:55:59Z"
+    },
+    {
+      "id": "resilience.cleaning-concurrent-publication",
+      "gate": "resilience",
+      "status": "passed",
+      "command": "uv run --extra advanced pytest -q tests/backend/test_cleaning_concurrency.py --junitxml=docs/evidence/cleaning-concurrency-junit.xml",
+      "artifactPaths": [
+        "docs/evidence/cleaning-concurrency-junit.xml",
+        "docs/evidence/verification-summary.md"
+      ],
+      "executedAt": "2026-09-06T02:00:43.795354+03:00",
+      "notes": "Reproduced pre-fix unhandled uniqueness failure; after fix, losing publication returns 409 without overwriting winner (777) or raw source (100). Unique artifact keys protect legacy numeric paths. Failed publication may leave an unreferenced file; no garbage collector."
+    }
+  ]
+}

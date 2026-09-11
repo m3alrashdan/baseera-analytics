@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baseera.local/contracts/recommendation.schema.json",
+  "title": "Recommendation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "recommendationId",
+    "action",
+    "evidenceIds",
+    "expectedBenefit",
+    "uncertainty",
+    "prerequisites",
+    "ownerSuggestion",
+    "reviewRequired"
+  ],
+  "properties": {
+    "recommendationId": { "type": "string" },
+    "action": { "type": "string", "minLength": 1 },
+    "evidenceIds": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "expectedBenefit": { "type": ["string", "null"] },
+    "uncertainty": { "type": "string", "minLength": 1 },
+    "prerequisites": { "type": "array", "items": { "type": "string" } },
+    "ownerSuggestion": { "type": ["string", "null"] },
+    "reviewRequired": { "const": true }
+  }
+}
+

@@ -1,0 +1,183 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUNBUFFERED: "1"
+  FORCE_COLOR: "1"
+
+jobs:
+  contracts:
+    name: Contracts and evaluation corpus
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate JSON contracts and evidence manifests
+        run: python scripts/validate_json_contracts.py
+      - name: Validate bilingual evaluation structure and coverage
+        run: python scripts/validate_ai_evals.py
+      - name: Validate Compose rendering
+        run: docker compose -f compose.yaml -f infra/compose.validate.yml --env-file .env.example config --quiet
+
+  backend:
+    name: Python quality and tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.8"
+          enable-cache: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install locked dependencies
+        run: uv sync --frozen --extra dev --extra advanced
+      - name: Install PDF fonts and rendering libraries
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libpango-1.0-0 libpangoft2-1.0-0 fonts-noto-core
+      - name: Formatting
+        run: uv run ruff format --check services tests scripts
+      - name: Lint
+        run: uv run ruff check services tests scripts
+      - name: Type check
+        run: uv run mypy services/api/baseera
+      - name: Tests
+        run: |
+          mkdir -p .artifacts
+          uv run --extra advanced pytest --cov=services/api/baseera --cov-fail-under=80 --cov-report=xml:.artifacts/backend-coverage.xml --junitxml=.artifacts/backend-junit.xml
+      - name: Retain test report on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-junit
+          path: .artifacts/backend-*.xml
+          if-no-files-found: warn
+          retention-days: 14
+
+  web:
+    name: Web quality, tests, and production build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.20.2"
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Formatting
+        run: npm run format:check --workspace @baseera/web
+      - name: Lint
+        run: npm run lint --workspace @baseera/web
+      - name: Type check
+        run: npm run typecheck --workspace @baseera/web
+      - name: Unit tests
+        run: |
+          mkdir -p apps/web/.artifacts
+          npm run test --workspace @baseera/web -- --reporter=default --reporter=junit --outputFile=.artifacts/web-junit.xml
+      - name: Production build
+        run: npm run build --workspace @baseera/web
+      - name: Retain test report on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-junit
+          path: apps/web/.artifacts/web-junit.xml
+          if-no-files-found: warn
+          retention-days: 14
+
+  browser:
+    name: Live production browser journeys
+    needs: web
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      BASEERA_DATABASE_URL: sqlite:///./.baseera/ci-browser.db
+      BASEERA_ARTIFACT_ROOT: ./.baseera/ci-browser-artifacts
+      BASEERA_ALLOWED_ORIGINS: http://127.0.0.1:3100
+      BASEERA_LLM_PROVIDER: disabled
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.8"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.20.2"
+          cache: npm
+      - name: Install locked dependencies
+        run: |
+          npm ci
+          uv sync --frozen --extra dev --extra advanced
+      - name: Install pinned Playwright browser and OS dependencies
+        run: npx playwright install --with-deps chromium
+      - name: Build production web
+        run: npm run build --workspace @baseera/web
+      - name: Seed isolated database and run real API journeys
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          mkdir -p .artifacts
+          PYTHONPATH=services/api uv run --extra advanced python -m baseera.seed
+          uv run --extra advanced uvicorn baseera.main:app --app-dir services/api --host 127.0.0.1 --port 8100 > .artifacts/api.log 2>&1 &
+          api_pid=$!
+          npm run start --workspace @baseera/web > .artifacts/web.log 2>&1 &
+          web_pid=$!
+          trap 'kill "$api_pid" "$web_pid" 2>/dev/null || true' EXIT
+          for attempt in {1..60}; do
+            if curl --fail --silent http://127.0.0.1:8100/api/v1/health/ready >/dev/null && curl --fail --silent http://127.0.0.1:3100/en/login >/dev/null; then
+              break
+            fi
+            sleep 1
+          done
+          curl --fail --silent http://127.0.0.1:8100/api/v1/health/ready
+          curl --fail --silent --output /dev/null http://127.0.0.1:3100/en/login
+          PLAYWRIGHT_JUNIT_OUTPUT_FILE="$GITHUB_WORKSPACE/.artifacts/browser-junit.xml" BASEERA_LIVE_E2E=1 PLAYWRIGHT_BASE_URL=http://127.0.0.1:3100 npm run test:e2e --workspace @baseera/web -- --workers=1 --reporter=list,html,junit
+      - name: Retain traces and report on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            apps/web/playwright-report/
+            apps/web/test-results/
+            .artifacts/
+          if-no-files-found: warn
+          retention-days: 14
+
+  dependency-audit:
+    name: Dependency audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.20.2"
+          cache: npm
+      - name: npm audit report
+        run: npm audit --audit-level=high
+
+# Deliberately excluded from pull requests: hosted-provider/OIDC/Odoo/database smoke tests,
+# public deployment, external notifications, and destructive restore drills. Run those only in a
+# protected environment with explicit credentials, redacted evidence, and an operator-owned target.

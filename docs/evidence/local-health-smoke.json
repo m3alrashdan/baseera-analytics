@@ -1,0 +1,56 @@
+{
+  "environment": {
+    "harnessPeakRssKiB": 24556,
+    "logicalCpuCount": 16,
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.39",
+    "python": "3.12.3"
+  },
+  "finishedAt": "2026-09-05T17:14:30.233789Z",
+  "kind": "http_smoke",
+  "label": "local-health-smoke",
+  "limitations": [
+    "This measures one HTTP endpoint from the client harness host.",
+    "Harness peak RSS is not server/container peak memory.",
+    "No database row count, queue backlog, browser rendering, or model quality is inferred."
+  ],
+  "profile": {
+    "cacheState": "unknown",
+    "concurrency": 4,
+    "dataset": "not_applicable",
+    "providerMode": "ollama",
+    "requests": 30,
+    "timeoutSeconds": 5.0,
+    "warmupRequests": 3
+  },
+  "result": {
+    "attempted": 30,
+    "errorRate": 0.0,
+    "errors": {},
+    "failed": 0,
+    "latencyMs": {
+      "allP50": 8.509,
+      "allP95": 12.761,
+      "successMean": 8.762,
+      "successP50": 8.509,
+      "successP95": 12.761
+    },
+    "responseBytesTotal": 2100,
+    "statuses": {
+      "200": 30
+    },
+    "succeeded": 30,
+    "throughputRequestsPerSecond": 424.397,
+    "wallSeconds": 0.070688
+  },
+  "schemaVersion": "1.0",
+  "startedAt": "2026-09-05T17:14:29.285904Z",
+  "target": {
+    "expectedStatus": 200,
+    "method": "GET",
+    "url": "http://127.0.0.1:8100/api/v1/health/ready"
+  },
+  "warmup": {
+    "attempted": 3,
+    "failed": 0
+  }
+}

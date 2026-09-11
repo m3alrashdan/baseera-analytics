@@ -1,0 +1,31 @@
+{
+  "$schema": "../../run-result.schema.json",
+  "gateId": "contracts.ai-eval-corpus",
+  "status": "passed",
+  "startedAt": "2026-09-04T16:09:12Z",
+  "finishedAt": "2026-09-04T16:09:12Z",
+  "command": "uv run python scripts/validate_ai_evals.py",
+  "environment": {
+    "python": "3.12",
+    "providerMode": "not_invoked",
+    "worktree": "uncommitted implementation work"
+  },
+  "observations": {
+    "developmentCases": 12,
+    "heldOutCases": 72,
+    "heldOutByLocale": {"ar": 36, "en": 36},
+    "heldOutByOutcome": {
+      "abstain_insufficient_data": 8,
+      "answer": 50,
+      "clarify": 6,
+      "deny": 6,
+      "unavailable": 2
+    },
+    "topicsPerLocaleMinimum": 3
+  },
+  "limitations": [
+    "This run validated file structure, uniqueness, split separation, and coverage only.",
+    "No assistant, model provider, tool, oracle calculation, authorization path, or response grader ran.",
+    "The worktree was uncommitted, so rerun after the final commit for release evidence."
+  ]
+}

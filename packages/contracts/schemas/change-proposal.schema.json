@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://baseera.local/contracts/change-proposal.schema.json",
+  "title": "ChangeProposal",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "proposalId",
+    "targetType",
+    "targetId",
+    "expectedVersion",
+    "operations",
+    "preview",
+    "affectedDependencies"
+  ],
+  "properties": {
+    "proposalId": { "type": "string" },
+    "targetType": { "enum": ["dashboard", "report", "cleaning_recipe", "action"] },
+    "targetId": { "type": "string" },
+    "expectedVersion": { "type": "integer", "minimum": 1 },
+    "operations": { "type": "array", "items": { "$ref": "#/$defs/operation" }, "minItems": 1 },
+    "preview": { "type": "object" },
+    "affectedDependencies": { "type": "array", "items": { "type": "string" } }
+  },
+  "$defs": {
+    "operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["op", "path"],
+      "properties": {
+        "op": { "enum": ["add", "replace", "remove", "move", "recalculate"] },
+        "path": { "type": "string", "pattern": "^/" },
+        "from": { "type": "string" },
+        "value": {}
+      }
+    }
+  }
+}
+
