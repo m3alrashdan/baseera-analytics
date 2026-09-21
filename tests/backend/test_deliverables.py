@@ -19,8 +19,8 @@ SALES_CSV = "\n".join(
         f"O-{index:04d},2025-{1 + index // 45:02d}-{1 + index % 27:02d},"
         f"{'Amman' if index % 3 else 'amman'},"
         f"{'Zain' if index % 4 == 0 else f'C{index % 37}'},"
-        f"{'\"1,' if index % 5 == 0 else ''}{900 + index * 3}"
-        f"{'.00\"' if index % 5 == 0 else '.00'},"
+        f"{'"1,' if index % 5 == 0 else ''}{900 + index * 3}"
+        f"{'.00"' if index % 5 == 0 else '.00'},"
         f"{'' if index % 11 == 0 else 600 + index * 2}"
         for index in range(240)
     ]
@@ -104,8 +104,11 @@ def test_the_brief_never_claims_accuracy_it_did_not_measure(
     ],
 )
 def test_every_export_format_renders(
-    client: TestClient, auth_headers: dict[str, str], version_id: str,
-    kind: str, signature: bytes,
+    client: TestClient,
+    auth_headers: dict[str, str],
+    version_id: str,
+    kind: str,
+    signature: bytes,
 ) -> None:
     response = client.post(
         f"/api/v1/dataset-versions/{version_id}/brief/export",

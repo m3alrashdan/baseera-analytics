@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 from dataclasses import replace
 from datetime import date, timedelta
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, cast
 
 from fastapi import (
     Depends,
@@ -58,7 +58,15 @@ from .auth import (
 )
 from .cleaning import STEP_KINDS, run_recipe
 from .config import Settings, load_settings
-from .connectors import sync_records, validate_connector_destination
+from .connectors import (
+    credential_state,
+    delete_credentials,
+    run_source_fetch,
+    store_credentials,
+    sync_records,
+    validate_connector_destination,
+)
+from .credentials import SecretBox
 from .database import Base, build_engine, build_session_factory
 from .deliverables import brief_export, build_brief
 from .errors import AppError, not_found
@@ -102,6 +110,7 @@ from .models import (
 )
 from .reports import EXPORT_MEDIA_TYPES, export_filename, render_report_export
 from .seed import seed_demo as populate_demo
+from .source_adapters import SourceLimits, SourcePolicy
 
 API_PREFIX = "/api/v1"
 
@@ -544,6 +553,14 @@ class ConnectorCreateRequest(StrictModel):
     incremental_field: str = "updated_at"
 
 
+class ConnectorCredentialsRequest(StrictModel):
+    credentials: dict[str, str] = Field(min_length=1, max_length=12)
+
+
+class ConnectorFetchRequest(StrictModel):
+    max_rows: int | None = Field(default=None, ge=1, le=100_000)
+
+
 class ConnectorSyncRequest(StrictModel):
     schema_: dict[str, str] = Field(alias="schema", min_length=1, max_length=500)
     records: list[dict[str, Any]] = Field(max_length=10_000)
@@ -582,6 +599,9 @@ def create_app(
     engine = build_engine(settings.database_url)
     session_factory = build_session_factory(engine)
     store = ArtifactStore(settings.artifact_root)
+    # Outside development this raises when no key is configured, so a deployment can never
+    # start in a state where it would accept credentials it cannot protect.
+    secret_box = SecretBox.from_environment(settings.environment)
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
@@ -605,6 +625,7 @@ def create_app(
     application.state.engine = engine
     application.state.session_factory = session_factory
     application.state.artifact_store = store
+    application.state.secret_box = secret_box
     application.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.allowed_origins),
@@ -2034,7 +2055,8 @@ def register_routes(application: FastAPI, settings: Settings, store: ArtifactSto
         context: AuthContext = Depends(get_auth_context),
         db: Session = Depends(get_db),
     ) -> dict[str, Any]:
-        return _connector(_owned(db, Connector, connector_id, context.tenant_id, "Connector"))
+        connector = _owned(db, Connector, connector_id, context.tenant_id, "Connector")
+        return _connector(connector, credential_state(db, connector))
 
     @application.post(f"{API_PREFIX}/connectors/{{connector_id}}/sync")
     def sync_connector_endpoint(
@@ -2058,6 +2080,95 @@ def register_routes(application: FastAPI, settings: Settings, store: ArtifactSto
             "checkpoint_mode": payload.checkpoint_mode,
         }
         return sync_records(db, connector, batch, idempotency_key)
+
+    def _require_secret_box() -> SecretBox:
+        box = application.state.secret_box
+        if box is None:
+            raise AppError(
+                503,
+                "credential_storage_unavailable",
+                "Credential storage is not configured. Set BASEERA_SECRET_KEY and restart.",
+            )
+        return cast(SecretBox, box)
+
+    def _require_source_admin(context: AuthContext) -> None:
+        if context.membership.role not in {"executive", "administrator"}:
+            raise AppError(403, "permission_denied", "Only a source administrator can do this")
+
+    @application.put(f"{API_PREFIX}/connectors/{{connector_id}}/credentials")
+    def put_connector_credentials(
+        connector_id: str,
+        payload: ConnectorCredentialsRequest,
+        context: AuthContext = Depends(require_csrf),
+        db: Session = Depends(get_db),
+    ) -> dict[str, Any]:
+        """Store the credentials this deployment uses to reach the customer's system.
+
+        The values are encrypted before they reach the database and are never read back through
+        the API; only a non-reversible fingerprint is returned so an operator can confirm a change.
+        """
+
+        _require_source_admin(context)
+        box = _require_secret_box()
+        connector = _owned(db, Connector, connector_id, context.tenant_id, "Connector")
+        store_credentials(db, box, connector, payload.credentials)
+        if connector.status == "needs_credentials":
+            connector.status = "configured_unverified"
+        db.commit()
+        return {"connector_id": connector.id, "credentials": credential_state(db, connector)}
+
+    @application.delete(f"{API_PREFIX}/connectors/{{connector_id}}/credentials")
+    def remove_connector_credentials(
+        connector_id: str,
+        context: AuthContext = Depends(require_csrf),
+        db: Session = Depends(get_db),
+    ) -> dict[str, Any]:
+        _require_source_admin(context)
+        connector = _owned(db, Connector, connector_id, context.tenant_id, "Connector")
+        removed = delete_credentials(db, connector)
+        if removed:
+            connector.status = "needs_credentials"
+        db.commit()
+        return {"connector_id": connector.id, "removed": removed}
+
+    @application.post(f"{API_PREFIX}/connectors/{{connector_id}}/fetch")
+    def fetch_connector_endpoint(
+        connector_id: str,
+        payload: ConnectorFetchRequest | None = None,
+        idempotency_key: str | None = Header(default=None, alias="Idempotency-Key"),
+        context: AuthContext = Depends(require_csrf),
+        db: Session = Depends(get_db),
+    ) -> dict[str, Any]:
+        """Pull one bounded batch from the source using the stored credentials.
+
+        This is the server-side counterpart to ``/sync``: the deployment reaches the source
+        itself instead of waiting for an operator to stage records.
+        """
+
+        if not idempotency_key:
+            raise AppError(
+                422, "idempotency_key_required", "Connector fetch requires Idempotency-Key"
+            )
+        _require_source_admin(context)
+        box = _require_secret_box()
+        connector = _owned(db, Connector, connector_id, context.tenant_id, "Connector")
+        requested_rows = payload.max_rows if payload is not None else None
+        policy = SourcePolicy(
+            allowed_hosts=settings.connector_allow_hosts,
+            private_hosts=settings.connector_private_hosts,
+            postgres_sslmode=settings.connector_postgres_sslmode,
+        )
+        limits = SourceLimits(max_rows=requested_rows or settings.connector_max_rows)
+        result = run_source_fetch(
+            db,
+            box,
+            connector,
+            policy=policy,
+            idempotency_key=idempotency_key,
+            limits=limits,
+        )
+        db.commit()
+        return result
 
     @application.get(f"{API_PREFIX}/connectors/{{connector_id}}/records")
     def connector_records(
@@ -2480,8 +2591,8 @@ def _report_payload(report: Report, version: ReportVersion) -> dict[str, Any]:
     }
 
 
-def _connector(connector: Connector) -> dict[str, Any]:
-    return {
+def _connector(connector: Connector, credentials: dict[str, Any] | None = None) -> dict[str, Any]:
+    payload: dict[str, Any] = {
         "id": connector.id,
         "kind": connector.kind,
         "name": connector.name,
@@ -2493,6 +2604,9 @@ def _connector(connector: Connector) -> dict[str, Any]:
             connector.last_checked_at.isoformat() if connector.last_checked_at else None
         ),
     }
+    if credentials is not None:
+        payload["credentials"] = credentials
+    return payload
 
 
 def _company_items(db: Session, context: AuthContext, module: str) -> list[dict[str, Any]]:

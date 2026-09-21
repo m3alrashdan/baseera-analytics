@@ -11,8 +11,8 @@ from typing import Any
 
 import pytest
 from baseera.cleaning import control_totals, run_recipe
-from baseera.insights import analyze_dataset
 from baseera.forecasting import detect_level_shift
+from baseera.insights import analyze_dataset
 from baseera.profiling import coerce_number, profile_dataset
 from fastapi.testclient import TestClient
 
@@ -27,11 +27,41 @@ A-4,2025-04-20,EAST,1 500,n/a
 
 COLUMNS = ["order_id", "order_date", "region", "revenue", "cost"]
 ROWS: list[dict[str, Any]] = [
-    {"order_id": "A-1", "order_date": "2025-01-05", "region": "North", "revenue": " 1200.50 ", "cost": 800},
-    {"order_id": "A-2", "order_date": "2025-02-05", "region": "north", "revenue": "1,300.00", "cost": 900},
-    {"order_id": "A-1", "order_date": "2025-01-05", "region": "North", "revenue": " 1200.50 ", "cost": 800},
-    {"order_id": "A-3", "order_date": "2025-03-11", "region": "South", "revenue": None, "cost": 700},
-    {"order_id": "A-4", "order_date": "2025-04-20", "region": "EAST", "revenue": "1 500", "cost": "n/a"},
+    {
+        "order_id": "A-1",
+        "order_date": "2025-01-05",
+        "region": "North",
+        "revenue": " 1200.50 ",
+        "cost": 800,
+    },
+    {
+        "order_id": "A-2",
+        "order_date": "2025-02-05",
+        "region": "north",
+        "revenue": "1,300.00",
+        "cost": 900,
+    },
+    {
+        "order_id": "A-1",
+        "order_date": "2025-01-05",
+        "region": "North",
+        "revenue": " 1200.50 ",
+        "cost": 800,
+    },
+    {
+        "order_id": "A-3",
+        "order_date": "2025-03-11",
+        "region": "South",
+        "revenue": None,
+        "cost": 700,
+    },
+    {
+        "order_id": "A-4",
+        "order_date": "2025-04-20",
+        "region": "EAST",
+        "revenue": "1 500",
+        "cost": "n/a",
+    },
 ]
 
 
@@ -74,8 +104,12 @@ def test_casting_numbers_explains_why_the_total_moved() -> None:
     rows, columns, preview = run_recipe(
         ROWS,
         COLUMNS,
-        {"steps": [{"kind": "trim_whitespace", "columns": ["revenue"]},
-                   {"kind": "cast_number", "columns": ["revenue"]}]},
+        {
+            "steps": [
+                {"kind": "trim_whitespace", "columns": ["revenue"]},
+                {"kind": "cast_number", "columns": ["revenue"]},
+            ]
+        },
     )
     assert columns == COLUMNS
     revenue = next(c for c in preview["control_totals"]["changes"] if c["column"] == "revenue")
@@ -83,8 +117,10 @@ def test_casting_numbers_explains_why_the_total_moved() -> None:
     assert revenue["note"] == "difference_explained_by_newly_readable_cells"
     assert preview["requires_review"] is True
     assert "control_total_changed" in preview["review_reasons"]
-    assert any("could not be read" in line or "text cell" in line
-               for line in preview["summary"]["steps"]["en"])
+    assert any(
+        "could not be read" in line or "text cell" in line
+        for line in preview["summary"]["steps"]["en"]
+    )
 
 
 def test_a_step_that_changes_nothing_is_reported_not_hidden() -> None:
@@ -95,8 +131,9 @@ def test_a_step_that_changes_nothing_is_reported_not_hidden() -> None:
     assert any("changed nothing" in item for item in preview["summary"]["caveats"]["en"])
 
 
-def test_cleaning_summary_is_written_in_both_languages(client: TestClient,
-                                                       auth_headers: dict[str, str]) -> None:
+def test_cleaning_summary_is_written_in_both_languages(
+    client: TestClient, auth_headers: dict[str, str]
+) -> None:
     upload = client.post(
         "/api/v1/datasets/upload",
         files={"file": ("messy.csv", MESSY_CSV, "text/csv")},
@@ -138,8 +175,9 @@ class TestCleaningRefusals:
 
     def test_unknown_column_names_the_column_and_the_alternatives(self) -> None:
         with pytest.raises(Exception) as error:
-            run_recipe(ROWS, COLUMNS, {"steps": [{"kind": "trim_whitespace",
-                                                  "columns": ["Revenue"]}]})
+            run_recipe(
+                ROWS, COLUMNS, {"steps": [{"kind": "trim_whitespace", "columns": ["Revenue"]}]}
+            )
         details = error.value.details  # type: ignore[attr-defined]
         assert details["unknown_columns"] == ["Revenue"]
         assert "revenue" in details["available_columns"]
@@ -152,15 +190,18 @@ class TestCleaningRefusals:
 
     def test_filling_blanks_with_a_blank_is_refused(self) -> None:
         with pytest.raises(Exception) as error:
-            run_recipe(ROWS, COLUMNS,
-                       {"steps": [{"kind": "replace_missing", "columns": ["revenue"],
-                                   "value": ""}]})
+            run_recipe(
+                ROWS,
+                COLUMNS,
+                {"steps": [{"kind": "replace_missing", "columns": ["revenue"], "value": ""}]},
+            )
         assert error.value.code == "empty_replacement_value"  # type: ignore[attr-defined]
 
     def test_a_text_replacement_never_lands_in_a_numeric_column(self) -> None:
         rows = [{"cost": 800}, {"cost": None}, {"cost": 900}]
         cleaned, _columns, _preview = run_recipe(
-            rows, ["cost"],
+            rows,
+            ["cost"],
             {"steps": [{"kind": "replace_missing", "columns": ["cost"], "value": "0"}]},
         )
         # A string here would silently retype the column and break every metric over it.
@@ -168,9 +209,11 @@ class TestCleaningRefusals:
         assert isinstance(cleaned[1]["cost"], float)
 
         with pytest.raises(Exception) as error:
-            run_recipe(rows, ["cost"],
-                       {"steps": [{"kind": "replace_missing", "columns": ["cost"],
-                                   "value": "unknown"}]})
+            run_recipe(
+                rows,
+                ["cost"],
+                {"steps": [{"kind": "replace_missing", "columns": ["cost"], "value": "unknown"}]},
+            )
         assert error.value.code == "replacement_type_mismatch"  # type: ignore[attr-defined]
 
 
@@ -217,9 +260,11 @@ def test_concentration_is_judged_against_an_even_split() -> None:
 
 def test_missing_data_that_clusters_in_one_segment_is_flagged() -> None:
     rows = [
-        {"region": "Aqaba" if index % 4 == 0 else "Amman",
-         "cost": None if index % 4 == 0 else 100 + index,
-         "revenue": 200 + index}
+        {
+            "region": "Aqaba" if index % 4 == 0 else "Amman",
+            "cost": None if index % 4 == 0 else 100 + index,
+            "revenue": 200 + index,
+        }
         for index in range(120)
     ]
     columns = ["region", "cost", "revenue"]
@@ -239,9 +284,32 @@ def test_missing_data_that_clusters_in_one_segment_is_flagged() -> None:
         ("flat and quiet", [100.0, 101.0, 99.0, 100.5] * 8, False),
         (
             "a smooth low-noise climb",
-            [35293.0, 36533, 36941, 37349, 38540, 37942, 39380, 39800, 41136, 41568,
-             40797, 42432, 43913, 44357, 44801, 43856, 46871, 47327, 45031, 45461,
-             45522, 47646, 48088, 48529],
+            [
+                35293.0,
+                36533,
+                36941,
+                37349,
+                38540,
+                37942,
+                39380,
+                39800,
+                41136,
+                41568,
+                40797,
+                42432,
+                43913,
+                44357,
+                44801,
+                43856,
+                46871,
+                47327,
+                45031,
+                45461,
+                45522,
+                47646,
+                48088,
+                48529,
+            ],
             False,
         ),
     ],

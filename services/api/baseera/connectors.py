@@ -1,18 +1,24 @@
 from __future__ import annotations
 
 import ipaddress
+import json
 import uuid
+from collections.abc import Mapping
 from datetime import date, datetime
 from decimal import Decimal, InvalidOperation
-from typing import Any, cast
+from typing import TYPE_CHECKING, Any, cast
 from urllib.parse import urlsplit
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from .credentials import SecretBox, credential_context
 from .errors import AppError
 from .ingestion import stable_hash
-from .models import Connector, ConnectorRecord, ConnectorRun, utcnow
+from .models import Connector, ConnectorRecord, ConnectorRun, ConnectorSecret, utcnow
+
+if TYPE_CHECKING:  # source_adapters imports this module, so keep the runtime edge one-way
+    from .source_adapters import SourceLimits, SourcePolicy
 
 
 def validate_connector_destination(base_url: str, allow_hosts: tuple[str, ...]) -> str:
@@ -322,3 +328,176 @@ def _run_payload(run: ConnectorRun, *, deduplicated: bool) -> dict[str, Any]:
         "deduplicated": deduplicated,
         "error": run.error,
     }
+
+
+MAX_CREDENTIAL_KEYS = 12
+MAX_CREDENTIAL_VALUE_BYTES = 4096
+
+
+def _validated_credentials(credentials: Mapping[str, Any]) -> dict[str, str]:
+    """Reject anything that is not a small, flat mapping of strings before encryption."""
+
+    if not credentials:
+        raise AppError(422, "credentials_required", "At least one credential field is required")
+    if len(credentials) > MAX_CREDENTIAL_KEYS:
+        raise AppError(
+            422,
+            "credentials_too_many",
+            f"A connector accepts at most {MAX_CREDENTIAL_KEYS} credential fields",
+        )
+    cleaned: dict[str, str] = {}
+    for key, value in credentials.items():
+        if not isinstance(key, str) or not key or len(key) > 64:
+            raise AppError(422, "credential_key_invalid", "Credential names must be short strings")
+        if not isinstance(value, str):
+            raise AppError(
+                422,
+                "credential_value_invalid",
+                f"Credential '{key}' must be a string",
+            )
+        if len(value.encode("utf-8")) > MAX_CREDENTIAL_VALUE_BYTES:
+            raise AppError(422, "credential_value_too_large", f"Credential '{key}' is too large")
+        cleaned[key] = value
+    return cleaned
+
+
+def store_credentials(
+    db: Session,
+    box: SecretBox,
+    connector: Connector,
+    credentials: Mapping[str, Any],
+) -> ConnectorSecret:
+    """Encrypt and upsert the credential set for ``connector``.
+
+    The clear text never leaves this call. Replacing an existing set rewrites the ciphertext in
+    place so a connector can never hold two live credential rows.
+    """
+
+    cleaned = _validated_credentials(credentials)
+    context = credential_context(connector.organization_id, connector.id)
+    ciphertext = box.encrypt(
+        json.dumps(cleaned, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+        context=context,
+    )
+    fingerprint = stable_hash({"keys": sorted(cleaned), "material": cleaned})
+    existing = db.scalar(
+        select(ConnectorSecret).where(ConnectorSecret.connector_id == connector.id)
+    )
+    if existing is None:
+        secret = ConnectorSecret(
+            id=f"connector-secret-{uuid.uuid4().hex}",
+            organization_id=connector.organization_id,
+            connector_id=connector.id,
+            ciphertext=ciphertext,
+            key_id=box.active_key_id,
+            fingerprint=fingerprint,
+        )
+        db.add(secret)
+    else:
+        secret = existing
+        secret.ciphertext = ciphertext
+        secret.key_id = box.active_key_id
+        secret.fingerprint = fingerprint
+        secret.rotated_at = utcnow()
+    connector.secret_ref = secret.id
+    return secret
+
+
+def load_credentials(db: Session, box: SecretBox, connector: Connector) -> dict[str, str]:
+    """Return the decrypted credential set, re-encrypting it when a retired key sealed it."""
+
+    secret = db.scalar(select(ConnectorSecret).where(ConnectorSecret.connector_id == connector.id))
+    if secret is None:
+        raise AppError(
+            409,
+            "credentials_missing",
+            "This source has no stored credentials. Save them before running a sync.",
+        )
+    context = credential_context(connector.organization_id, connector.id)
+    decoded = json.loads(box.decrypt(secret.ciphertext, context=context).decode("utf-8"))
+    if not isinstance(decoded, dict):
+        raise AppError(500, "credential_unreadable", "The stored credential is malformed")
+    if box.needs_rotation(secret.ciphertext):
+        secret.ciphertext = box.encrypt(
+            json.dumps(decoded, sort_keys=True, separators=(",", ":")).encode("utf-8"),
+            context=context,
+        )
+        secret.key_id = box.active_key_id
+        secret.rotated_at = utcnow()
+    return {str(key): str(value) for key, value in decoded.items()}
+
+
+def credential_state(db: Session, connector: Connector) -> dict[str, Any]:
+    """Describe stored credentials without revealing any part of them."""
+
+    secret = db.scalar(select(ConnectorSecret).where(ConnectorSecret.connector_id == connector.id))
+    if secret is None:
+        return {"configured": False, "key_id": None, "fingerprint": None, "updated_at": None}
+    return {
+        "configured": True,
+        "key_id": secret.key_id,
+        "fingerprint": secret.fingerprint[:12],
+        "updated_at": secret.updated_at.isoformat() if secret.updated_at else None,
+    }
+
+
+def delete_credentials(db: Session, connector: Connector) -> bool:
+    secret = db.scalar(select(ConnectorSecret).where(ConnectorSecret.connector_id == connector.id))
+    if secret is None:
+        return False
+    db.delete(secret)
+    connector.secret_ref = None
+    return True
+
+
+# Keys BASEERA stores about a connector that are not adapter configuration. The adapters reject
+# unknown fields on purpose, so platform metadata must be removed before a fetch.
+PLATFORM_CONFIG_KEYS = frozenset({"mode"})
+
+
+def adapter_configuration(configuration: Mapping[str, Any]) -> dict[str, Any]:
+    """Return only the fields a source adapter accepts."""
+
+    return {key: value for key, value in configuration.items() if key not in PLATFORM_CONFIG_KEYS}
+
+
+def run_source_fetch(
+    db: Session,
+    box: SecretBox,
+    connector: Connector,
+    *,
+    policy: SourcePolicy,
+    idempotency_key: str,
+    limits: SourceLimits | None = None,
+    transport: Any | None = None,
+    resolver: Any | None = None,
+) -> dict[str, Any]:
+    """Pull one bounded batch from the customer's system and commit it through ``sync_records``.
+
+    This is the server-side counterpart to the staged-batch sync endpoint: the deployment holds
+    the credentials and reaches the source itself, so an operator does not have to run an
+    external extract job. Address validation, TLS policy and row limits stay with the adapter.
+    """
+
+    from .source_adapters import fetch_source
+
+    credentials = load_credentials(db, box, connector)
+    batch = fetch_source(
+        connector.kind,
+        adapter_configuration(connector.configuration),
+        credentials,
+        policy=policy,
+        checkpoint=dict(connector.checkpoint or {}),
+        limits=limits,
+        **({"transport": transport} if transport is not None else {}),
+        **({"resolver": resolver} if resolver is not None else {}),
+    )
+    result = sync_records(db, connector, batch.to_sync_payload(), idempotency_key)
+    result["source"] = {
+        "complete": batch.complete,
+        "pages_read": batch.pages_read,
+        "records_fetched": len(batch.records),
+        "checkpoint_mode": batch.checkpoint_mode,
+        "limitations": list(batch.limitations),
+    }
+    return result

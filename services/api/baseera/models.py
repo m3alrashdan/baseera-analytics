@@ -460,6 +460,28 @@ class Connector(Base):
     last_checked_at: Mapped[datetime | None] = mapped_column(DateTime)
 
 
+class ConnectorSecret(Base):
+    """One encrypted credential set for a connector.
+
+    ``ciphertext`` is sealed by :mod:`baseera.credentials` and bound to the owning tenant and
+    connector, so it cannot be replayed against another row. Clear text is never stored and the
+    API never returns this table.
+    """
+
+    __tablename__ = "connector_secrets"
+    __table_args__ = (UniqueConstraint("connector_id"),)
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    organization_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True)
+    connector_id: Mapped[str] = mapped_column(ForeignKey("connectors.id"), index=True)
+    ciphertext: Mapped[str] = mapped_column(Text)
+    key_id: Mapped[str] = mapped_column(String(32))
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow, onupdate=utcnow)
+    rotated_at: Mapped[datetime | None] = mapped_column(DateTime)
+
+
 class ConnectorRun(Base):
     __tablename__ = "connector_runs"
     __table_args__ = (UniqueConstraint("organization_id", "connector_id", "idempotency_key"),)

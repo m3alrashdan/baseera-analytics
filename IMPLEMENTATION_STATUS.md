@@ -1,6 +1,6 @@
 # BASEERA implementation status
 
-Updated: 2026-09-06 (Asia/Amman)
+Updated: 2026-09-21 (Asia/Amman)
 
 A persisted local application is working with real Ollama inference and a tested
 import → reviewed cleaning → metric → saved dashboard → report/export journey.
@@ -31,6 +31,14 @@ Do not run development and production web servers on port 3100 simultaneously.
   queue simulation and assumption-labeled synthetic causal estimation.
 - Read-only PostgreSQL adapter exercised against a disposable local database; REST/Odoo
   mock-transport contract tests, not live company-system verification.
+- Server-side connector execution: the deployment stores credentials encrypted with AES-256-GCM
+  and fetches from the source itself through the REST/Odoo/PostgreSQL adapters. Credentials are
+  bound to their tenant and connector, are never returned by the API, and a retired key still
+  decrypts while the value is re-sealed by the active key. Outside development the API refuses to
+  start without `BASEERA_SECRET_KEY`. Verified in the Compose deployment on PostgreSQL: the
+  plaintext appears nowhere in a full `pg_dump`.
+- Docker Compose build and runtime verified end to end on PostgreSQL in `production` mode:
+  all five containers healthy, seed applied, connector created and credentials stored.
 - A separate worker calculates and persists metric-refresh results. Revoked owners and malformed
   requests fail explicitly; cancellation, persisted recovery and idempotency have scoped tests.
 
@@ -38,12 +46,14 @@ Do not run development and production web servers on port 3100 simultaneously.
 
 | Check | Actual result |
 | --- | --- |
-| Backend suite | 106 passed; 3 dedicated PostgreSQL tests skipped in the default suite |
-| Python coverage | 85.31% statement coverage; subprocess worker coverage is not collected |
+| Backend suite | 159 passed; 4 skipped (3 dedicated PostgreSQL, 1 data-dependent) |
+| Python coverage | 82% statement coverage; subprocess worker coverage is not collected |
 | Dedicated local PostgreSQL source | All 3 skipped cases passed in a separate configured run |
 | Web unit/component suite | 20 passed in 9 files |
 | Production-mode browser suite | 8 passed: 2 full real-API journeys and 6 contract/mock checks |
-| Production build, lint, types, formatting | Passed |
+| Lint and formatting (`ruff check`, `ruff format --check`) | Passed |
+| Type check (`mypy`) | **Fails: 36 pre-existing errors** in cleaning, deliverables, forecasting, insights, analytics |
+| Clean Docker build and runtime on PostgreSQL | Passed; stack healthy, credentials encrypted at rest |
 | npm advisory audit | 0 reported vulnerabilities at check time; not a security certification |
 | Real Ollama bilingual smoke | Arabic 35.813 s; English 20.315 s; both 1,019,113.64 JOD and identical result ID |
 
@@ -56,14 +66,21 @@ benchmark. See [verification summary](docs/evidence/verification-summary.md),
 
 - OCR/PDF document ingestion, interactive 3D, OIDC, hosted providers, MySQL/SQL Server,
   Chronos and TabPFN adapters.
-- End-to-end external connector credential storage, discovery/mapping UI, server fetch execution
-  and canonical publication. The current sync API accepts staged batches.
+- Connector discovery/mapping UI and canonical publication from synced records. Credential
+  storage and server-side fetch execution are now implemented; mapping a customer schema onto
+  governed metrics is still manual.
 - Background report-export/connector-sync adapters: these fail explicitly. Schedule metadata is
   saved, but cron/alert delivery is not implemented. Decision records are not a full approval flow.
 - Full collaborative report/dashboard designer, complete accessibility/zoom review, raw-source
   lineage, representative load tests, live company validation and full adversarial AI evaluation.
-- Clean Docker build/runtime verification, backup/restore drill, hardened public deployment,
-  enterprise identity/secrets/monitoring and independent security review.
+- Backup/restore drill, hardened public deployment (TLS, reverse proxy), enterprise identity
+  (OIDC/SSO is not implemented), monitoring/alerting and independent security review.
+- Alembic migrations describe the full schema and `alembic check` reports no drift, but the
+  application still calls `Base.metadata.create_all()` at startup, so a customer upgrade path
+  between released versions is not yet proven.
+- `mypy` does not pass on the pre-existing modules listed above; CI's type-check step fails.
+- Scheduled execution: `Schedule` rows with a cron field are stored, but no executor runs them,
+  so connector sync and metric refresh are still triggered manually.
 
 Use one worker with local SQLite. Ingestion is bounded but synchronous. Known demo credentials
 must never be exposed publicly. Capability labels describe limited tested scope, not every

@@ -24,6 +24,9 @@ class Settings:
     api_rate_limit: int = 120
     rate_limit_window_seconds: int = 60
     connector_allow_hosts: tuple[str, ...] = ()
+    connector_private_hosts: tuple[str, ...] = ()
+    connector_postgres_sslmode: str = "verify-full"
+    connector_max_rows: int = 10_000
 
     @property
     def secure_cookies(self) -> bool:
@@ -39,6 +42,14 @@ def load_settings() -> Settings:
     hosts = tuple(
         item.strip().lower()
         for item in os.getenv("BASEERA_CONNECTOR_ALLOW_HOSTS", "").split(",")
+        if item.strip()
+    )
+    # An on-premise deployment reaches sources on the customer's own private network. Those
+    # hosts must be named explicitly here so the adapter's anti-SSRF default stays in force
+    # for every address an operator has not approved.
+    private_hosts = tuple(
+        item.strip().lower()
+        for item in os.getenv("BASEERA_CONNECTOR_PRIVATE_HOSTS", "").split(",")
         if item.strip()
     )
     return Settings(
@@ -61,4 +72,7 @@ def load_settings() -> Settings:
         api_rate_limit=int(os.getenv("BASEERA_API_RATE_LIMIT", "120")),
         rate_limit_window_seconds=int(os.getenv("BASEERA_RATE_LIMIT_WINDOW_SECONDS", "60")),
         connector_allow_hosts=hosts,
+        connector_private_hosts=private_hosts,
+        connector_postgres_sslmode=os.getenv("BASEERA_CONNECTOR_POSTGRES_SSLMODE", "verify-full"),
+        connector_max_rows=int(os.getenv("BASEERA_CONNECTOR_MAX_ROWS", "10000")),
     )
