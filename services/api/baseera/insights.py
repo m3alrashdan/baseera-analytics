@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import math
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from typing import Any
 
 import numpy as np
@@ -868,7 +869,7 @@ def analyze_dataset(
 ) -> dict[str, Any]:
     """Produce the full finding set for one dataset version."""
     findings: list[dict[str, Any]] = []
-    for producer in (
+    producers: tuple[Callable[..., list[dict[str, Any]]], ...] = (
         _quality_findings,
         _trend_findings,
         _concentration_findings,
@@ -876,7 +877,8 @@ def analyze_dataset(
         _missingness_findings,
         _distribution_findings,
         _relationship_findings,
-    ):
+    )
+    for producer in producers:
         try:
             findings.extend(
                 producer(rows, profile) if producer is not _quality_findings else producer(profile)

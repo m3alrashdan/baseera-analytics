@@ -177,6 +177,11 @@ test("live AI analyst team: sample → full analysis → dossier → question", 
     .click();
   await expect(page).toHaveURL(/analyst/);
   await page.locator(".sample-card").nth(1).click();
+  // Wait for the sample to become the selected dataset before commissioning it.
+  await expect(page.locator(".ai-main__head h2")).toHaveText(
+    ar ? "تسرب المشتركين" : "Subscription churn",
+  );
+  await expect(page.locator(".launch-card button")).toBeEnabled();
   await page.locator(".launch-card button").click();
   await expect(page.locator(".live-run")).toBeVisible();
   await expect(page.locator(".dossier")).toBeVisible({ timeout: 180_000 });

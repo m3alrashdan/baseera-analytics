@@ -519,7 +519,9 @@ export function AIAnalystWorkspace({
                       type="button"
                       className="button button--primary button--large"
                       onClick={() => void startAnalysis()}
-                      disabled={busy === "run"}
+                      // Loading a sample or an upload switches the dataset; starting now
+                      // would analyse the previous one.
+                      disabled={busy !== null}
                     >
                       {busy === "run" ? (
                         <LoaderCircle

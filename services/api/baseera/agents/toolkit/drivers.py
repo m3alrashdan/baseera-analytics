@@ -33,7 +33,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 
 from ...errors import AppError
-from ..common import bi, clean, confidence_label, fmt, pct, safe_div
+from ..common import bi, clean, confidence_label, fmt, limit_native_threads, pct, safe_div
 from ..frame import AnalysisFrame
 from .query import apply_filters
 
@@ -177,6 +177,7 @@ def fit_model(
     features: list[str] | None = None,
     filters: list[dict[str, Any]] | None = None,
 ) -> FittedModel:
+    limit_native_threads()
     target = frame.require(target)
     cache_key = f"model::{target}::{sorted(features or [])}::{filters!r}"
     cached = frame.cache.get(cache_key)

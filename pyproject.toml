@@ -34,6 +34,7 @@ dependencies = [
   "xlsxwriter==3.2.9",
   "weasyprint==69.0",
   "anthropic==1.8.0",
+  "threadpoolctl==3.6.0",
 ]
 
 [project.optional-dependencies]

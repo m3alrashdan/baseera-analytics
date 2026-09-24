@@ -21,7 +21,7 @@ import structlog
 from ..config import Settings
 from ..errors import AppError
 from . import critic, narrative, playbook, strategy
-from .common import bi, clean, fmt, pct
+from .common import bi, clean, fmt, limit_native_threads, pct
 from .frame import AnalysisFrame
 from .llm import Provider, ToolCall
 from .registry import TOOLS, digest
@@ -233,6 +233,7 @@ def run_autopilot(
     cancelled: Any = None,
 ) -> dict[str, Any]:
     started = time.monotonic()
+    limit_native_threads()
     ws = Workspace(frame, emit, cancelled)
     ws.emit(
         "chief",
@@ -560,6 +561,7 @@ def run_question(
     cancelled: Any = None,
 ) -> dict[str, Any]:
     started = time.monotonic()
+    limit_native_threads()
     ws = Workspace(frame, emit, cancelled)
     ws.emit(
         "chief", "status", bi("Chief analyst is reading the question", "كبير المحللين يقرأ السؤال")

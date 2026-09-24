@@ -19,7 +19,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.preprocessing import RobustScaler
 
 from ...errors import AppError
-from ..common import bi, clean, fmt, pct, safe_div
+from ..common import bi, clean, fmt, limit_native_threads, pct, safe_div
 from ..frame import AnalysisFrame
 from .query import add_period, apply_filters
 
@@ -49,6 +49,7 @@ def segment(
     names = [n for n in names if pd.api.types.is_numeric_dtype(frame.df[n])]
     if len(names) < 2:
         raise AppError(422, "insufficient_data", "Segmentation needs at least two measures.")
+    limit_native_threads()
     df = apply_filters(frame, filters)
     data = df[names].apply(pd.to_numeric, errors="coerce").dropna()
     if len(data) < 60:

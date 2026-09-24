@@ -483,7 +483,9 @@ def _apply_step(
                 return (str(value) in members) is (operator == "in")
             if operator == "contains":
                 return isinstance(value, str) and str(target) in value
-            left, right = as_number(value), as_number(target)
+            # Numbers compare numerically; anything else falls back to text comparison.
+            left: Any = as_number(value)
+            right: Any = as_number(target)
             if left is None or right is None:
                 left, right = str(value), str(target)
             return {
@@ -574,7 +576,7 @@ def _compare_totals(
         right = after.get(column)
         left_sum = left["sum"] if left else None
         right_sum = right["sum"] if right else None
-        if left_sum is None or right_sum is None:
+        if left is None or right is None or left_sum is None or right_sum is None:
             changes.append(
                 {
                     "column": column,

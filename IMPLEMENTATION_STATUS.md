@@ -55,13 +55,13 @@ Do not run development and production web servers on port 3100 simultaneously.
 
 | Check | Actual result |
 | --- | --- |
-| Backend suite | 159 passed; 4 skipped (3 dedicated PostgreSQL, 1 data-dependent) |
-| Python coverage | 82% statement coverage; subprocess worker coverage is not collected |
+| Backend suite | 200 passed (41 new AI analyst team tests); 4 skipped (3 dedicated PostgreSQL, 1 data-dependent) |
+| Python coverage | 83% statement coverage; subprocess worker coverage is not collected |
 | Dedicated local PostgreSQL source | All 3 skipped cases passed in a separate configured run |
-| Web unit/component suite | 20 passed in 9 files |
+| Web unit/component suite | 26 passed in 10 files |
 | Production-mode browser suite | 8 passed: 2 full real-API journeys and 6 contract/mock checks |
 | Lint and formatting (`ruff check`, `ruff format --check`) | Passed |
-| Type check (`mypy`) | **Fails: 36 pre-existing errors** in cleaning, deliverables, forecasting, insights, analytics |
+| Type check (`mypy`) | Passed (the 36 pre-existing annotation errors were fixed without behaviour changes) |
 | Clean Docker build and runtime on PostgreSQL | Passed; stack healthy, credentials encrypted at rest |
 | npm advisory audit | 0 reported vulnerabilities at check time; not a security certification |
 | Real Ollama bilingual smoke | Arabic 35.813 s; English 20.315 s; both 1,019,113.64 JOD and identical result ID |
@@ -87,7 +87,6 @@ benchmark. See [verification summary](docs/evidence/verification-summary.md),
 - Alembic migrations describe the full schema and `alembic check` reports no drift, but the
   application still calls `Base.metadata.create_all()` at startup, so a customer upgrade path
   between released versions is not yet proven.
-- `mypy` does not pass on the pre-existing modules listed above; CI's type-check step fails.
 - Scheduled execution: `Schedule` rows with a cron field are stored, but no executor runs them,
   so connector sync and metric refresh are still triggered manually.
 

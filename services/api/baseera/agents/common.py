@@ -8,6 +8,7 @@ from typing import Any
 
 import numpy as np
 import pandas as pd
+from threadpoolctl import threadpool_limits
 
 Bilingual = dict[str, str]
 
@@ -114,3 +115,20 @@ def p_text(value: float | None) -> str:
     if value < 0.001:
         return "<0.001"
     return f"{value:.3f}"
+
+
+_native_limit: Any = None
+
+
+def limit_native_threads() -> None:
+    """Pin OpenMP and BLAS pools to one thread for this process's analysis workload.
+
+    The analyst team fits many small models inside a server that also serves requests.
+    Multi-threaded OpenMP (gradient boosting, k-means) spin-waits for cores; under any
+    CPU contention a 3-second fit was measured taking 99 seconds, while a single thread
+    fits the same model in under 3 seconds. The limit is applied once and kept.
+    """
+
+    global _native_limit
+    if _native_limit is None:
+        _native_limit = threadpool_limits(limits=1)

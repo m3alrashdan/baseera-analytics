@@ -33,7 +33,7 @@ test("English login exposes demo and empty workspace paths", async ({
 }) => {
   await page.goto("/en/login");
   await expect(
-    page.getByRole("heading", { name: /decisions deserve evidence/i }),
+    page.getByRole("heading", { name: /upload your data/i }),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: /fictional demo/i }),

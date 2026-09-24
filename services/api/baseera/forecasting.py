@@ -755,7 +755,7 @@ def forecast_series(
     # rolling-origin errors, per horizon. Symmetric by construction, so the interval always
     # contains its own point forecast; systematic bias is reported separately in the
     # diagnostics rather than folded into an offset the reader cannot see.
-    radii: dict[int, dict[str, float]] = {}
+    radii: dict[int, dict[str, Any]] = {}
     calibration = errors_by_model[selected_name]
     pooled = [e for bucket in calibration.values() for e in bucket]
     for step in range(1, horizon + 1):
