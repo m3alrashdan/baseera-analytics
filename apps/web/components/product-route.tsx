@@ -39,6 +39,7 @@ import {
   SourcesScreen,
 } from "./data-workspaces";
 import { AnalystWorkspace } from "./analyst";
+import { AIAnalystWorkspace } from "./analyst/ai-analyst";
 import { DataPrepWorkspace } from "./data-prep";
 import { ForecastWorkspace } from "./forecast-workspace";
 import { ExecutiveOverview } from "./executive-overview";
@@ -92,6 +93,10 @@ export function ProductRoute({ locale, route, workspace }: ProductRouteProps) {
 }
 
 function renderRoute(locale: Locale, route: string, workspace?: string) {
+  if (route === "analyst" || route.startsWith("analyst/"))
+    return (
+      <AIAnalystWorkspace locale={locale} initialTab={route.split("/")[1]} />
+    );
   if (route === "overview")
     return <OverviewRoute locale={locale} workspace={workspace} />;
   if (route === "assistant") return <AssistantScreen locale={locale} />;
@@ -197,14 +202,14 @@ function LoginScreen({
   async function login(credentials: { email: string; password: string }) {
     await postJson("/api/v1/auth/login", credentials);
     localStorage.removeItem("baseera-workspace");
-    onNavigate(`/${locale}/overview`);
+    onNavigate(`/${locale}/analyst`);
   }
   async function demo() {
     await postJson("/api/v1/auth/login", {
       email: "executive@demo.baseera.local",
       password: "BaseeraDemo!2026",
     });
-    onNavigate(`/${locale}/overview?workspace=demo`);
+    onNavigate(`/${locale}/analyst?workspace=demo`);
   }
   return (
     <main className="login-page">
@@ -219,18 +224,18 @@ function LoginScreen({
         <div className="login-story__body">
           <p className="eyebrow">
             {ar
-              ? "من البيانات إلى قرار قابل للدفاع"
-              : "From data to a defensible decision"}
+              ? "فريق محللي بيانات من الذكاء الاصطناعي"
+              : "Your AI data-analyst team"}
           </p>
           <h1>
             {ar
-              ? "القرارات تستحق دليلًا، لا مجرد لوحة."
-              : "Decisions deserve evidence, not just a dashboard."}
+              ? "ارفع بياناتك. احصل على تحليل خبير خلال دقيقة."
+              : "Upload your data. Get an expert's analysis in a minute."}
           </h1>
           <p>
             {ar
-              ? "اربط المعنى بالمقياس، والنتيجة بمصدرها، والإجراء بصاحبه ومراجعة أثره."
-              : "Tie each metric to meaning, each result to its source, and each action to an owner and outcome review."}
+              ? "تسعة وكلاء متخصصين يدققون ويحللون ويتنبؤون ويفسرون ويوصون — وكل رقم محسوب ومتحقق منه ومرتبط بدليله."
+              : "Nine specialist agents audit, analyse, forecast, explain and recommend — every number computed, verified and linked to its evidence."}
           </p>
           <div className="login-principles">
             <div>

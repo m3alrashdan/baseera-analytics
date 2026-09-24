@@ -1,6 +1,6 @@
 {
   "$schema": "./docs/capability-manifest.schema.json",
-  "generatedAt": "2026-09-05T23:03:27Z",
+  "generatedAt": "2026-09-24T11:00:00Z",
   "statuses": [
     "implemented_tested",
     "implemented_unverified",
@@ -421,14 +421,23 @@
       "id": "assistant.hosted",
       "area": "assistant",
       "title": "assistant — hosted",
-      "status": "unimplemented",
-      "summary": "Hosted-provider adapter is not implemented and is not required for local Ollama.",
-      "evidence": [],
-      "blockers": [],
-      "limitations": [
-        "Hosted-provider adapter is not implemented and is not required for local Ollama."
+      "status": "implemented_unverified",
+      "summary": "Claude (Anthropic SDK) drives the AI analyst team: tool use, adaptive thinking, prompt caching, structured report output and server-side refusal fallbacks.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/agents-junit.xml",
+          "status": "passed"
+        }
       ],
-      "updatedAt": "2026-09-05T22:50:00Z"
+      "blockers": [
+        "A live run needs BASEERA_ANTHROPIC_API_KEY; the adapter is contract-tested against the SDK's message shapes only."
+      ],
+      "limitations": [
+        "No live Claude request has been recorded in this repository's evidence.",
+        "Aggregates, schema and category labels are sent to the provider; raw rows are not."
+      ],
+      "updatedAt": "2026-09-24T11:00:00Z"
     },
     {
       "id": "assistant.ollama",
@@ -866,6 +875,172 @@
         "Evidence snapshots are not a replacement for immutable raw-source lineage."
       ],
       "updatedAt": "2026-09-05T22:50:00Z"
+    },
+    {
+      "id": "agents.autopilot",
+      "area": "ai_analyst_team",
+      "title": "AI analyst team — full autonomous analysis",
+      "status": "implemented_tested",
+      "summary": "Nine specialist agents run a complete engagement on any uploaded table: schema and quality audit, KPIs, group tests, correlations, trend, seasonality, backtested forecast, change explanation, anomalies, key drivers, segments, RFM, cohorts, what-if, prioritised recommendations and an executive dossier.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/agents-junit.xml",
+          "status": "passed"
+        },
+        {
+          "kind": "test",
+          "path": "tests/agents/test_agents.py",
+          "status": "passed"
+        },
+        {
+          "kind": "test",
+          "path": "tests/agents/test_api.py",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Validated on deterministic fictional samples, not on a real company.",
+        "Drivers and what-if results are associations, labelled as such."
+      ],
+      "updatedAt": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "agents.toolkit",
+      "area": "ai_analyst_team",
+      "title": "AI analyst team — deterministic analytics toolkit",
+      "status": "implemented_tested",
+      "summary": "Validated query language, hypothesis tests with effect sizes and Benjamini-Hochberg control, Theil-Sen/Mann-Kendall trends, conformal forecasts, exact contribution analysis, Isolation Forest anomalies, cross-validated driver models with leakage guards, k-means with silhouette selection, RFM and cohorts.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/agents-junit.xml",
+          "status": "passed"
+        },
+        {
+          "kind": "test",
+          "path": "tests/agents/test_toolkit.py",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Analyses are capped at 250,000 rows; models sample 20,000."
+      ],
+      "updatedAt": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "agents.conversation",
+      "area": "ai_analyst_team",
+      "title": "AI analyst team — ask the team",
+      "status": "implemented_tested",
+      "summary": "Threaded Arabic/English questions answered through typed tool calls with cited evidence; deterministic routing without a model, tool loop with Claude or Ollama.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/agents-junit.xml",
+          "status": "passed"
+        },
+        {
+          "kind": "test",
+          "path": "tests/agents/test_agents.py",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Without a language model the router understands common analyst intents only."
+      ],
+      "updatedAt": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "agents.verification",
+      "area": "ai_analyst_team",
+      "title": "AI analyst team — critic and number verification",
+      "status": "implemented_tested",
+      "summary": "Every finding is re-graded for sample size, significance, effect size, forecast skill and data quality; every figure a model writes is checked against tool evidence and unverified figures are flagged.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/agents-junit.xml",
+          "status": "passed"
+        },
+        {
+          "kind": "test",
+          "path": "tests/agents/test_agents.py",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Verification matches numbers, not the meaning of the sentence around them."
+      ],
+      "updatedAt": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "agents.exports",
+      "area": "ai_analyst_team",
+      "title": "AI analyst team — dossier exports",
+      "status": "implemented_tested",
+      "summary": "Arabic and English dossier as PDF (inline SVG charts), Word, PowerPoint with native editable charts, HTML, Markdown and JSON.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/agents-junit.xml",
+          "status": "passed"
+        },
+        {
+          "kind": "test",
+          "path": "tests/agents/test_api.py",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Word export presents chart data as tables."
+      ],
+      "updatedAt": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "agents.ollama_tools",
+      "area": "ai_analyst_team",
+      "title": "AI analyst team — local model tool calling",
+      "status": "implemented_unverified",
+      "summary": "Ollama function-calling session for fully on-premise agent runs.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "docs/evidence/agents-junit.xml",
+          "status": "passed"
+        }
+      ],
+      "blockers": [
+        "Requires an installed local model with tool support; contract-tested with a mock transport only."
+      ],
+      "limitations": [
+        "Small local models may call tools less reliably; failures fall back to the expert engine."
+      ],
+      "updatedAt": "2026-09-24T11:00:00Z"
+    },
+    {
+      "id": "agents.web_workspace",
+      "area": "ai_analyst_team",
+      "title": "AI analyst team — web workspace",
+      "status": "implemented_tested",
+      "summary": "Live team war room, dossier with evidence-linked findings and charts, recommendations, method panel, threaded chat, samples and uploads, in RTL Arabic and English.",
+      "evidence": [
+        {
+          "kind": "test",
+          "path": "apps/web/test/analyst.test.tsx",
+          "status": "passed"
+        }
+      ],
+      "blockers": [],
+      "limitations": [
+        "Live browser journey is gated behind BASEERA_LIVE_E2E."
+      ],
+      "updatedAt": "2026-09-24T11:00:00Z"
     }
   ],
   "schemaVersion": "1.0"

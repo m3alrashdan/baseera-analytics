@@ -559,3 +559,27 @@ class AuditRecord(Base):
     metadata_json: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
     correlation_id: Mapped[str | None] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class AgentRun(Base):
+    """One engagement of the AI analyst team: a full analysis or a question."""
+
+    __tablename__ = "agent_runs"
+
+    id: Mapped[str] = mapped_column(String(64), primary_key=True)
+    organization_id: Mapped[str] = mapped_column(ForeignKey("organizations.id"), index=True)
+    user_id: Mapped[str] = mapped_column(ForeignKey("users.id"), index=True)
+    dataset_version_id: Mapped[str] = mapped_column(ForeignKey("dataset_versions.id"), index=True)
+    thread_id: Mapped[str | None] = mapped_column(String(64), index=True)
+    mode: Mapped[str] = mapped_column(String(20))
+    locale: Mapped[str] = mapped_column(String(5), default="en")
+    question: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20), default="queued")
+    engine: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict)
+    events: Mapped[list[dict[str, Any]]] = mapped_column(JSON, default=list)
+    result: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    error: Mapped[dict[str, Any] | None] = mapped_column(JSON)
+    cancellation_requested: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime)

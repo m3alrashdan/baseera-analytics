@@ -24,8 +24,10 @@ import {
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
+  MessageSquareText,
   Search,
   Settings2,
+  Sparkles,
   ShieldCheck,
   Sun,
   UsersRound,
@@ -45,6 +47,13 @@ interface AppShellProps {
 }
 
 const navGroups = [
+  {
+    label: "group.ai",
+    items: [
+      { path: "analyst", label: "nav.analyst", icon: Sparkles },
+      { path: "analyst/ask", label: "nav.ask", icon: MessageSquareText },
+    ],
+  },
   {
     label: "group.understand",
     items: [
@@ -347,9 +356,9 @@ export function AppShell({
           ) : null}
           {children}
         </main>
-        <Link className="floating-ask" href={`/${locale}/assistant${query}`}>
+        <Link className="floating-ask" href={`/${locale}/analyst/ask${query}`}>
           <Bot size={18} aria-hidden="true" />
-          {ar ? "اسأل بصيرة" : "Ask Baseera"}
+          {ar ? "اسأل فريق المحللين" : "Ask the analyst team"}
           {ar ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
         </Link>
       </div>

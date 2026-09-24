@@ -19,6 +19,15 @@ Do not run development and production web servers on port 3100 simultaneously.
 
 ## Verified scope
 
+- **AI analyst team (new):** nine specialist agents run a complete analysis of any uploaded
+  table and answer threaded questions with cited evidence. Deterministic toolkit (hypothesis
+  tests, trends, backtested forecasts, exact contribution analysis, anomalies, driver models with
+  leakage guards, segmentation, RFM, cohorts, what-if), critic with number verification,
+  bilingual dossier and PDF/Word/PowerPoint/HTML/Markdown exports, live web workspace.
+  Engines: Claude via the Anthropic SDK (contract-tested, no live key in evidence), local Ollama
+  tool calling (mock-transport tested), and the built-in expert engine (fully tested).
+  See [docs/agents.md](docs/agents.md).
+
 - Local sessions, CSRF/origin checks, tenant/department restrictions, protected HR projections
   and permission rechecks when reading stored evidence or executing metric jobs.
 - CSV/TSV/XLSX/JSON/JSONL/Parquet uploads, full accepted-row profiles, reviewed deterministic

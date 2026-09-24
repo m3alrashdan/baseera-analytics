@@ -60,6 +60,12 @@ same checks. A prior approval or signed URL is not unlimited future authority.
   artifact, and backup controls.
 - Arbitrary user-supplied model files, pickles, remote model code, and unpinned executable plugins are
   denied pending explicit review.
+- The AI analyst team sends a hosted model (Claude) only column names and roles, up to eight
+  category labels per dimension, aggregate findings and compact tool digests; raw rows, record-level
+  anomaly context, credentials and session material are never sent. Configuring
+  `BASEERA_ANTHROPIC_API_KEY` is the operator's explicit opt-in; without it analyses stay on the
+  host. Models can call only read-only analysis tools with server-validated arguments; they cannot
+  execute code, SQL or reach the network, and data text is framed as data, not instructions.
 
 ## Data and execution controls
 

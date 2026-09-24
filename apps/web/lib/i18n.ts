@@ -4,6 +4,9 @@ const messages = {
   en: {
     "brand.name": "BASEERA",
     "brand.arabic": "بصيرة",
+    "nav.analyst": "AI analyst team",
+    "nav.ask": "Ask the team",
+    "group.ai": "AI analysts",
     "nav.overview": "Overview",
     "nav.explore": "Explore",
     "nav.prepare": "Prepare data",
@@ -54,6 +57,9 @@ const messages = {
   ar: {
     "brand.name": "BASEERA",
     "brand.arabic": "بصيرة",
+    "nav.analyst": "فريق المحللين الأذكياء",
+    "nav.ask": "اسأل الفريق",
+    "group.ai": "المحللون الأذكياء",
     "nav.overview": "نظرة عامة",
     "nav.explore": "التحليل",
     "nav.prepare": "إعداد البيانات",

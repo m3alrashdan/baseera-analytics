@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import io
 import math
+import os
 import re
 import threading
 import time
@@ -583,8 +584,16 @@ def create_app(
     login_rate_limit: int | None = None,
     api_rate_limit: int | None = None,
     rate_limit_window_seconds: int | None = None,
+    agent_provider: str | None = None,
 ) -> FastAPI:
     base_settings = load_settings()
+    # Tests must never reach a hosted model because a developer has a key exported:
+    # they use the deterministic engine and run analyses inline unless told otherwise.
+    resolved_agent_provider = agent_provider or (
+        "deterministic"
+        if testing and not os.getenv("BASEERA_AGENT_PROVIDER")
+        else base_settings.agent_provider
+    )
     settings = replace(
         base_settings,
         database_url=database_url or base_settings.database_url,
@@ -595,6 +604,8 @@ def create_app(
             if connector_allow_hosts is not None
             else base_settings.connector_allow_hosts
         ),
+        agent_provider=resolved_agent_provider,
+        agent_inline=base_settings.agent_inline or testing,
     )
     engine = build_engine(settings.database_url)
     session_factory = build_session_factory(engine)
@@ -602,6 +613,9 @@ def create_app(
     # Outside development this raises when no key is configured, so a deployment can never
     # start in a state where it would accept credentials it cannot protect.
     secret_box = SecretBox.from_environment(settings.environment)
+    from .agents.routes import AgentRunner, recover_interrupted_runs, register_agent_routes
+
+    agent_runner = AgentRunner(session_factory, store, settings, inline=settings.agent_inline)
 
     @asynccontextmanager
     async def lifespan(application: FastAPI):
@@ -611,7 +625,9 @@ def create_app(
                 populate_demo(db)
         with session_factory() as db:
             recover_interrupted_jobs(db)
+            recover_interrupted_runs(db)
         yield
+        agent_runner.shutdown()
         engine.dispose()
 
     application = FastAPI(
@@ -626,6 +642,7 @@ def create_app(
     application.state.session_factory = session_factory
     application.state.artifact_store = store
     application.state.secret_box = secret_box
+    application.state.agent_runner = agent_runner
     application.add_middleware(
         CORSMiddleware,
         allow_origins=list(settings.allowed_origins),
@@ -665,6 +682,7 @@ def create_app(
                     "assistant/query",
                     "process/analyze",
                     "causal/analyze",
+                    "analyst/runs",
                 )
             }
             bucket = (
@@ -755,6 +773,8 @@ def create_app(
     from .assistant import register_assistant_routes
 
     register_assistant_routes(application)
+    # The AI analyst team: autonomous full analyses and evidence-backed conversation.
+    register_agent_routes(application, agent_runner)
     return application
 
 

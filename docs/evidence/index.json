@@ -1,6 +1,6 @@
 {
   "$schema": "./index.schema.json",
-  "generatedAt": "2026-09-05T23:03:27Z",
+  "generatedAt": "2026-09-24T11:30:00Z",
   "statuses": [
     "passed",
     "failed",
@@ -283,6 +283,17 @@
       ],
       "executedAt": "2026-09-06T02:00:43.795354+03:00",
       "notes": "Reproduced pre-fix unhandled uniqueness failure; after fix, losing publication returns 409 without overwriting winner (777) or raw source (100). Unique artifact keys protect legacy numeric paths. Failed publication may leave an unreferenced file; no garbage collector."
+    },
+    {
+      "id": "agents.unit-integration",
+      "gate": "backend",
+      "status": "passed",
+      "command": "uv run pytest tests/agents -q --junitxml=docs/evidence/agents-junit.xml",
+      "artifactPaths": [
+        "docs/evidence/agents-junit.xml"
+      ],
+      "executedAt": "2026-09-24T11:30:00Z",
+      "notes": "41 passed: toolkit statistics on deterministic samples, critic and number verification, autopilot and question orchestration, scripted model tool loops, Anthropic SDK message contract with a fake client, Ollama function calling over a mock transport, and the /api/v1/analyst HTTP surface including exports and tenant isolation. No live Claude or Ollama inference was executed."
     }
   ]
 }
