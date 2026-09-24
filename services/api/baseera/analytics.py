@@ -359,7 +359,8 @@ def forecast_dataset_column(
         if aggregation == "count":
             grouped[key].append(1.0)
             continue
-        number, _note = coerce_number(row.get(value_column))
+        # value_column is required above for every aggregation except count.
+        number, _note = coerce_number(row.get(value_column or ""))
         if number is None:
             continue
         grouped[key].append(number)

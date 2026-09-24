@@ -1,8 +1,55 @@
 # BASEERA | بصيرة
 
-BASEERA is a bilingual, tenant-aware analytics and decision-support application. It turns approved
-company data into governed metrics, evidence-linked dashboards, editable reports, and reviewed
-actions. Arabic uses a real right-to-left interface; English uses left-to-right presentation.
+**An AI data-analyst team for any business.** Upload a spreadsheet or connect a source, and a
+team of nine specialist AI agents does the work of a senior data analyst: it reads and audits
+the data, measures performance, tests hypotheses, forecasts, explains why numbers moved, finds
+what drives them, segments customers, sizes the levers, prioritises recommendations and writes
+the executive report — in native Arabic (RTL) or English.
+
+**فريق محللي بيانات من الذكاء الاصطناعي لأي منشأة.** ارفع ملفك، ويتولى تسعة وكلاء متخصصين عمل
+محلل بيانات خبير: فهم البيانات وتدقيقها، قياس الأداء، اختبار الفرضيات، التنبؤ، تفسير أسباب
+التغيّر، اكتشاف العوامل المؤثرة، تقسيم العملاء، تقدير أثر القرارات، ترتيب التوصيات، وكتابة
+التقرير التنفيذي — بالعربية أو الإنجليزية.
+
+## The AI analyst team
+
+| Agent | What it does |
+| --- | --- |
+| Chief Analyst · كبير المحللين | Frames the question, plans, delegates, investigates, answers |
+| Data Engineer · مهندس البيانات | Semantic model of any table, quality audit, what the data can support |
+| Statistician · الإحصائي | KPIs, distributions, correlations, group tests with effect sizes |
+| Forecaster · خبير التنبؤ | Trends, seasonality, structural breaks, backtested forecasts with calibrated intervals |
+| Root-cause Detective · محقق الأسباب | Exact contribution analysis of every change, root-cause path, anomalies |
+| Data Scientist · عالم البيانات | Key-driver models, segmentation, customer value tiers (RFM), cohorts |
+| Business Strategist · المستشار الاستراتيجي | What-if on the real levers, prioritised and sized recommendations |
+| Quality Reviewer · المراجع الناقد | Re-grades every finding; verifies every number a model writes |
+| Report Writer · كاتب التقارير | Executive dossier; PDF, Word, PowerPoint (native charts), HTML, Markdown |
+
+Two rules make it trustworthy: **numbers come only from deterministic, reproducible tools**, and
+**every figure a language model writes is checked against that evidence**. Raw rows never leave
+the server. Read [`docs/agents.md`](docs/agents.md) for the full design.
+
+### Try it
+
+```sh
+npm run local            # API :8100, web :3100, worker; seeds the fictional demo
+```
+
+Open <http://localhost:3100/ar/login>, choose the fictional demo, then in **AI analyst team**
+pick a sample (*Retail sales* or *Subscription churn*) or upload your own CSV/Excel/JSON/Parquet
+and press **Start the full analysis**. Follow the team live, read the dossier, export it, or
+switch to **Ask the team** for follow-up questions.
+
+### Choose the engine
+
+| Engine | Configure | Notes |
+| --- | --- | --- |
+| Claude (recommended) | `BASEERA_ANTHROPIC_API_KEY=...` (default model `claude-opus-5`) | Tool-using chief analyst, richer investigation and writing; aggregates only are sent |
+| Local model | `BASEERA_LLM_PROVIDER=ollama`, `BASEERA_LLM_BASE_URL`, `BASEERA_LLM_MODEL` | Fully on-premise; model must support tool calling |
+| Built-in expert engine | nothing | Complete analysis and bilingual narrative with no model and no network |
+
+`BASEERA_AGENT_PROVIDER=auto|anthropic|ollama|deterministic` forces a choice; see
+[`.env.example`](.env.example) for effort, fallbacks and tool-call limits.
 
 ## What is actually available
 
@@ -16,8 +63,9 @@ Never infer completion from a screen, package, or document. Check:
 
 The fictional demo proves software behavior only. It is not evidence of model accuracy, regulatory
 compliance, production security, or results on a real company. Local Ollama and a disposable local
-PostgreSQL source have been tested; live Odoo/private company sources have not. Hosted AI and OIDC
-adapters are not implemented, so supplying credentials alone will not enable them.
+PostgreSQL source have been tested; live Odoo/private company sources have not. The Claude adapter
+is contract-tested against the SDK's message shapes; no live Claude run is recorded in this
+repository's evidence. OIDC is not implemented.
 
 ## Recommended local start: installed Ollama, no API key
 
@@ -140,7 +188,9 @@ allow-lists, and LLM settings. Client-visible `NEXT_PUBLIC_*` variables must nev
   conversational generation reports `not_configured`.
 - local endpoint: set the configured provider/base URL/model to an operator-approved local service;
   model availability, license, privacy, and resource use still require verification.
-- hosted endpoint: no hosted adapter is implemented in this version. Do not configure a hosted key.
+- hosted endpoint: the AI analyst team supports Claude through the official Anthropic SDK
+  (`BASEERA_ANTHROPIC_API_KEY`). Only schema, category labels and aggregates are sent. The
+  legacy metric assistant (`/assistant`) remains local-only.
 
 On Linux, a container cannot reach Ollama bound only to host loopback through the Docker gateway.
 Use the recommended host start to reuse this machine's Ollama. For an operator-managed Docker
@@ -229,6 +279,7 @@ under [`infra/`](infra/).
 ```text
 apps/web/             Next.js browser application
 services/api/         FastAPI control plane and worker entry points
+services/api/baseera/agents/   AI analyst team: toolkit, agents, orchestrator, critic, exports
 packages/contracts/   Shared JSON contracts
 tests/                Backend, browser, contract, and product evaluation suites
 scripts/              Seed-fixture, verification, performance, backup, and restore utilities
@@ -236,7 +287,7 @@ infra/                Private-host operator templates (not a managed deployment)
 docs/                 Architecture, metrics, connectors, security, evaluation, and runbooks
 ```
 
-Key design references: [`architecture`](docs/architecture.md),
+Key design references: [`AI analyst team`](docs/agents.md), [`architecture`](docs/architecture.md),
 [`data model`](docs/data-model.md), [`metric semantics`](docs/metrics.md),
 [`connectors`](docs/connectors.md), [`design system`](docs/design-system.md),
 [`evaluation`](docs/evaluation.md), and [`ADR index`](docs/adr/README.md).

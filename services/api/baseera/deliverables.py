@@ -17,6 +17,7 @@ from pptx.chart.data import CategoryChartData
 from pptx.dml.color import RGBColor
 from pptx.enum.chart import XL_CHART_TYPE, XL_LEGEND_POSITION
 from pptx.enum.text import PP_ALIGN
+from pptx.presentation import Presentation as PptxPresentation
 from pptx.util import Emu, Inches, Pt
 
 from . import arabic as ar
@@ -227,7 +228,7 @@ def build_brief(
 # ----------------------------------------------------------------------------------
 
 
-def _blank(presentation: Presentation) -> Any:
+def _blank(presentation: PptxPresentation) -> Any:
     return presentation.slides.add_slide(presentation.slide_layouts[6])
 
 
@@ -337,7 +338,7 @@ def _slide_frame(slide: Any, title: str, eyebrow: str, rtl: bool) -> None:
     _rect(slide, margin, Inches(1.62), width, Emu(9525), LINE)
 
 
-def _title_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool) -> None:
+def _title_slide(presentation: PptxPresentation, brief: dict[str, Any], rtl: bool) -> None:
     slide = _blank(presentation)
     _rect(slide, 0, 0, SLIDE_WIDTH, SLIDE_HEIGHT, INK)
     _rect(slide, 0, SLIDE_HEIGHT - Inches(0.28), SLIDE_WIDTH, Inches(0.28), TEAL)
@@ -406,7 +407,7 @@ def _title_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool) -
     )
 
 
-def _quality_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool) -> None:
+def _quality_slide(presentation: PptxPresentation, brief: dict[str, Any], rtl: bool) -> None:
     slide = _blank(presentation)
     _slide_frame(slide, _t("quality", brief["locale"]), _t("dataset", brief["locale"]), rtl)
     quality = brief.get("quality") or {}
@@ -481,7 +482,7 @@ def _quality_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool)
         chart.value_axis.has_major_gridlines = True
 
 
-def _cleaning_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool) -> None:
+def _cleaning_slide(presentation: PptxPresentation, brief: dict[str, Any], rtl: bool) -> None:
     summary = brief.get("cleaning")
     if not summary:
         return
@@ -506,7 +507,7 @@ def _cleaning_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool
     _bullets(slide, margin, Inches(2.75), width, Inches(2.4), steps[:8], size=12, rtl=rtl)
     caveats = summary.get("caveats", {}).get(language, [])
     if caveats:
-        top = Inches(5.25)
+        top: int = Inches(5.25)
         _rect(slide, margin, top, width, Inches(1.55), RGBColor(0xFC, 0xEB, 0xC7))
         _bullets(
             slide,
@@ -523,7 +524,7 @@ def _cleaning_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool
 
 
 def _finding_slide(
-    presentation: Presentation, brief: dict[str, Any], finding: dict[str, Any], rtl: bool
+    presentation: PptxPresentation, brief: dict[str, Any], finding: dict[str, Any], rtl: bool
 ) -> None:
     slide = _blank(presentation)
     _slide_frame(slide, finding["title"], _t("findings", brief["locale"]), rtl)
@@ -554,7 +555,7 @@ def _finding_slide(
         (_t("recommendation", brief["locale"]), finding["recommendation"], GREEN, 13),
         (_t("limitation", brief["locale"]), finding["limitation"], MUTED, 11),
     ]
-    top = Inches(2.4)
+    top: int = Inches(2.4)
     for label, body, tone, size in blocks:
         _text(
             slide, margin, top, width, Inches(0.25), label, size=10, bold=True, color=TEAL, rtl=rtl
@@ -573,7 +574,7 @@ def _finding_slide(
         top += Inches(1.2)
 
 
-def _forecast_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool) -> None:
+def _forecast_slide(presentation: PptxPresentation, brief: dict[str, Any], rtl: bool) -> None:
     forecast = brief.get("forecast")
     if not forecast or not forecast.get("forecast"):
         return
@@ -649,7 +650,7 @@ def _forecast_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool
         )
 
 
-def _actions_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool) -> None:
+def _actions_slide(presentation: PptxPresentation, brief: dict[str, Any], rtl: bool) -> None:
     actions = brief.get("actions", [])
     if not actions:
         return
@@ -657,7 +658,7 @@ def _actions_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool)
     _slide_frame(slide, _t("actions", brief["locale"]), _t("findings", brief["locale"]), rtl)
     margin = Inches(0.75)
     width = SLIDE_WIDTH - margin * 2
-    top = Inches(1.95)
+    top: int = Inches(1.95)
     for index, action in enumerate(actions[:6], start=1):
         colour = SEVERITY_COLOR.get(action["severity"], MUTED)
         row_height = Inches(0.82)
@@ -690,7 +691,7 @@ def _actions_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool)
         top += row_height + Inches(0.12)
 
 
-def _limits_slide(presentation: Presentation, brief: dict[str, Any], rtl: bool) -> None:
+def _limits_slide(presentation: PptxPresentation, brief: dict[str, Any], rtl: bool) -> None:
     slide = _blank(presentation)
     _slide_frame(slide, _t("limits", brief["locale"]), _t("method", brief["locale"]), rtl)
     margin = Inches(0.75)

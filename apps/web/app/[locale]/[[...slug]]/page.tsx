@@ -15,7 +15,7 @@ export default async function LocaleRoute({
   return (
     <ProductRoute
       locale={locale}
-      route={(slug ?? ["overview"]).join("/")}
+      route={(slug ?? ["analyst"]).join("/")}
       workspace={workspace}
     />
   );

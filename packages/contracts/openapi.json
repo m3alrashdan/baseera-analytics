@@ -84,6 +84,134 @@
         "title": "Body_upload_dataset_api_v1_datasets_upload_post",
         "type": "object"
       },
+      "BriefExportRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "cleaning_run_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cleaning Run Id"
+          },
+          "forecast_date_column": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Date Column"
+          },
+          "forecast_horizon": {
+            "default": 6,
+            "maximum": 24.0,
+            "minimum": 1.0,
+            "title": "Forecast Horizon",
+            "type": "integer"
+          },
+          "forecast_value_column": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Value Column"
+          },
+          "format": {
+            "default": "pdf",
+            "pattern": "^(pdf|html|docx|json|md|pptx)$",
+            "title": "Format",
+            "type": "string"
+          },
+          "include_forecast": {
+            "default": true,
+            "title": "Include Forecast",
+            "type": "boolean"
+          },
+          "locale": {
+            "default": "en",
+            "pattern": "^(ar|en)$",
+            "title": "Locale",
+            "type": "string"
+          }
+        },
+        "title": "BriefExportRequest",
+        "type": "object"
+      },
+      "BriefRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "cleaning_run_id": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cleaning Run Id"
+          },
+          "forecast_date_column": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Date Column"
+          },
+          "forecast_horizon": {
+            "default": 6,
+            "maximum": 24.0,
+            "minimum": 1.0,
+            "title": "Forecast Horizon",
+            "type": "integer"
+          },
+          "forecast_value_column": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forecast Value Column"
+          },
+          "include_forecast": {
+            "default": true,
+            "title": "Include Forecast",
+            "type": "boolean"
+          },
+          "locale": {
+            "default": "en",
+            "pattern": "^(ar|en)$",
+            "title": "Locale",
+            "type": "string"
+          }
+        },
+        "title": "BriefRequest",
+        "type": "object"
+      },
       "CausalRequest": {
         "additionalProperties": false,
         "properties": {
@@ -242,6 +370,45 @@
         "title": "ConnectorCreateRequest",
         "type": "object"
       },
+      "ConnectorCredentialsRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "credentials": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "maxProperties": 12,
+            "minProperties": 1,
+            "title": "Credentials",
+            "type": "object"
+          }
+        },
+        "required": [
+          "credentials"
+        ],
+        "title": "ConnectorCredentialsRequest",
+        "type": "object"
+      },
+      "ConnectorFetchRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "max_rows": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Rows"
+          }
+        },
+        "title": "ConnectorFetchRequest",
+        "type": "object"
+      },
       "ConnectorSyncRequest": {
         "additionalProperties": false,
         "properties": {
@@ -355,6 +522,54 @@
         "title": "DashboardUpdateRequest",
         "type": "object"
       },
+      "DatasetForecastRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "aggregation": {
+            "default": "sum",
+            "pattern": "^(sum|mean|count)$",
+            "title": "Aggregation",
+            "type": "string"
+          },
+          "date_column": {
+            "maxLength": 240,
+            "minLength": 1,
+            "title": "Date Column",
+            "type": "string"
+          },
+          "horizon": {
+            "maximum": 24.0,
+            "minimum": 1.0,
+            "title": "Horizon",
+            "type": "integer"
+          },
+          "interval": {
+            "default": 0.9,
+            "maximum": 0.99,
+            "minimum": 0.5,
+            "title": "Interval",
+            "type": "number"
+          },
+          "value_column": {
+            "anyOf": [
+              {
+                "maxLength": 240,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value Column"
+          }
+        },
+        "required": [
+          "date_column",
+          "horizon"
+        ],
+        "title": "DatasetForecastRequest",
+        "type": "object"
+      },
       "DecisionRequest": {
         "additionalProperties": false,
         "properties": {
@@ -446,6 +661,13 @@
             "minimum": 1.0,
             "title": "Horizon",
             "type": "integer"
+          },
+          "interval": {
+            "default": 0.9,
+            "maximum": 0.99,
+            "minimum": 0.5,
+            "title": "Interval",
+            "type": "number"
           },
           "metric_id": {
             "title": "Metric Id",
@@ -693,6 +915,80 @@
         "title": "RollbackRequest",
         "type": "object"
       },
+      "RunRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset_version_id": {
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Dataset Version Id",
+            "type": "string"
+          },
+          "locale": {
+            "default": "en",
+            "enum": [
+              "en",
+              "ar"
+            ],
+            "title": "Locale",
+            "type": "string"
+          },
+          "mode": {
+            "default": "autopilot",
+            "enum": [
+              "autopilot",
+              "question"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "maxLength": 4000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thread Id"
+          }
+        },
+        "required": [
+          "dataset_version_id"
+        ],
+        "title": "RunRequest",
+        "type": "object"
+      },
+      "SampleRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "locale": {
+            "default": "en",
+            "enum": [
+              "en",
+              "ar"
+            ],
+            "title": "Locale",
+            "type": "string"
+          }
+        },
+        "title": "SampleRequest",
+        "type": "object"
+      },
       "ScheduleRequest": {
         "additionalProperties": false,
         "properties": {
@@ -897,6 +1193,463 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/api/v1/analyst/runs": {
+      "get": {
+        "operationId": "list_runs_api_v1_analyst_runs_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dataset_version_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dataset Version Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "autopilot",
+                    "question"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Mode"
+            }
+          },
+          {
+            "in": "query",
+            "name": "thread_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 64,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Thread Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 30,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Runs Api V1 Analyst Runs Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Runs"
+      },
+      "post": {
+        "operationId": "create_run_api_v1_analyst_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RunRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Create Run Api V1 Analyst Runs Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Run"
+      }
+    },
+    "/api/v1/analyst/runs/{run_id}": {
+      "get": {
+        "operationId": "get_run_api_v1_analyst_runs__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Since",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Run Api V1 Analyst Runs  Run Id  Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Run"
+      }
+    },
+    "/api/v1/analyst/runs/{run_id}/cancel": {
+      "post": {
+        "operationId": "cancel_run_api_v1_analyst_runs__run_id__cancel_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Cancel Run Api V1 Analyst Runs  Run Id  Cancel Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Run"
+      }
+    },
+    "/api/v1/analyst/runs/{run_id}/export": {
+      "get": {
+        "operationId": "export_run_api_v1_analyst_runs__run_id__export_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "pdf",
+              "enum": [
+                "html",
+                "pdf",
+                "docx",
+                "pptx",
+                "md",
+                "json"
+              ],
+              "title": "Format",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "locale",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "en",
+                    "ar"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Locale"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Run"
+      }
+    },
+    "/api/v1/analyst/samples": {
+      "get": {
+        "operationId": "list_samples_api_v1_analyst_samples_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response List Samples Api V1 Analyst Samples Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Samples"
+      }
+    },
+    "/api/v1/analyst/samples/{sample_id}": {
+      "post": {
+        "operationId": "load_sample_api_v1_analyst_samples__sample_id__post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "sample_id",
+            "required": true,
+            "schema": {
+              "title": "Sample Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SampleRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Load Sample Api V1 Analyst Samples  Sample Id  Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Load Sample"
+      }
+    },
+    "/api/v1/analyst/team": {
+      "get": {
+        "operationId": "team_api_v1_analyst_team_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Team Api V1 Analyst Team Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Team"
+      }
+    },
+    "/api/v1/analyst/threads": {
+      "get": {
+        "operationId": "threads_api_v1_analyst_threads_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "dataset_version_id",
+            "required": true,
+            "schema": {
+              "maxLength": 64,
+              "title": "Dataset Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Threads Api V1 Analyst Threads Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Threads"
+      }
+    },
+    "/api/v1/analyst/workspace": {
+      "get": {
+        "operationId": "workspace_api_v1_analyst_workspace_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Workspace Api V1 Analyst Workspace Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Workspace"
+      }
+    },
     "/api/v1/assistant/query": {
       "post": {
         "operationId": "assistant_query_api_v1_assistant_query_post",
@@ -1121,6 +1874,27 @@
         "summary": "Causal Analysis"
       }
     },
+    "/api/v1/cleaning/steps": {
+      "get": {
+        "description": "What the cleaning engine can actually do, with each step's options.",
+        "operationId": "cleaning_step_catalog_api_v1_cleaning_steps_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Cleaning Step Catalog Api V1 Cleaning Steps Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Cleaning Step Catalog"
+      }
+    },
     "/api/v1/company/{module}": {
       "get": {
         "operationId": "company_module_api_v1_company__module__get",
@@ -1261,6 +2035,172 @@
           }
         },
         "summary": "Get Connector"
+      }
+    },
+    "/api/v1/connectors/{connector_id}/credentials": {
+      "delete": {
+        "operationId": "remove_connector_credentials_api_v1_connectors__connector_id__credentials_delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connector_id",
+            "required": true,
+            "schema": {
+              "title": "Connector Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Remove Connector Credentials Api V1 Connectors  Connector Id  Credentials Delete",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Connector Credentials"
+      },
+      "put": {
+        "description": "Store the credentials this deployment uses to reach the customer's system.\n\nThe values are encrypted before they reach the database and are never read back through\nthe API; only a non-reversible fingerprint is returned so an operator can confirm a change.",
+        "operationId": "put_connector_credentials_api_v1_connectors__connector_id__credentials_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connector_id",
+            "required": true,
+            "schema": {
+              "title": "Connector Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConnectorCredentialsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Put Connector Credentials Api V1 Connectors  Connector Id  Credentials Put",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Connector Credentials"
+      }
+    },
+    "/api/v1/connectors/{connector_id}/fetch": {
+      "post": {
+        "description": "Pull one bounded batch from the source using the stored credentials.\n\nThis is the server-side counterpart to ``/sync``: the deployment reaches the source\nitself instead of waiting for an operator to stage records.",
+        "operationId": "fetch_connector_endpoint_api_v1_connectors__connector_id__fetch_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "connector_id",
+            "required": true,
+            "schema": {
+              "title": "Connector Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "anyOf": [
+                  {
+                    "$ref": "#/components/schemas/ConnectorFetchRequest"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ],
+                "title": "Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Fetch Connector Endpoint Api V1 Connectors  Connector Id  Fetch Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Fetch Connector Endpoint"
       }
     },
     "/api/v1/connectors/{connector_id}/records": {
@@ -1597,6 +2537,106 @@
         "summary": "Update Dashboard"
       }
     },
+    "/api/v1/dataset-versions/{version_id}/brief": {
+      "post": {
+        "description": "The consulting deliverable: condition, repairs, findings, outlook, limits.",
+        "operationId": "dataset_brief_api_v1_dataset_versions__version_id__brief_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "title": "Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BriefRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Dataset Brief Api V1 Dataset Versions  Version Id  Brief Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dataset Brief"
+      }
+    },
+    "/api/v1/dataset-versions/{version_id}/brief/export": {
+      "post": {
+        "description": "Download the brief as a document or a presentation deck.",
+        "operationId": "export_dataset_brief_api_v1_dataset_versions__version_id__brief_export_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "title": "Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BriefExportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export Dataset Brief"
+      }
+    },
     "/api/v1/dataset-versions/{version_id}/cleaning/apply": {
       "post": {
         "operationId": "apply_cleaning_api_v1_dataset_versions__version_id__cleaning_apply_post",
@@ -1715,6 +2755,142 @@
         "summary": "Preview Cleaning"
       }
     },
+    "/api/v1/dataset-versions/{version_id}/cleaning/suggest": {
+      "post": {
+        "description": "Propose a recipe from the profile. Proposals are never applied on their own.",
+        "operationId": "suggest_cleaning_api_v1_dataset_versions__version_id__cleaning_suggest_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "title": "Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Suggest Cleaning Api V1 Dataset Versions  Version Id  Cleaning Suggest Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Suggest Cleaning"
+      }
+    },
+    "/api/v1/dataset-versions/{version_id}/forecast": {
+      "post": {
+        "description": "Forecast a column of an uploaded dataset on its own monthly history.",
+        "operationId": "forecast_dataset_api_v1_dataset_versions__version_id__forecast_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "title": "Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DatasetForecastRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Forecast Dataset Api V1 Dataset Versions  Version Id  Forecast Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Forecast Dataset"
+      }
+    },
+    "/api/v1/dataset-versions/{version_id}/insights": {
+      "post": {
+        "description": "Deterministic analyst findings over one dataset version.",
+        "operationId": "dataset_insights_api_v1_dataset_versions__version_id__insights_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "title": "Version Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Dataset Insights Api V1 Dataset Versions  Version Id  Insights Post",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Dataset Insights"
+      }
+    },
     "/api/v1/dataset-versions/{version_id}/profile": {
       "get": {
         "operationId": "get_profile_api_v1_dataset_versions__version_id__profile_get",
@@ -1754,6 +2930,68 @@
           }
         },
         "summary": "Get Profile"
+      }
+    },
+    "/api/v1/dataset-versions/{version_id}/rows": {
+      "get": {
+        "description": "A bounded window onto the actual rows, so a reviewer can see the data.",
+        "operationId": "get_version_rows_api_v1_dataset_versions__version_id__rows_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "version_id",
+            "required": true,
+            "schema": {
+              "title": "Version Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Get Version Rows Api V1 Dataset Versions  Version Id  Rows Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Version Rows"
       }
     },
     "/api/v1/datasets": {
@@ -2098,6 +3336,27 @@
           }
         },
         "summary": "Create Forecast"
+      }
+    },
+    "/api/v1/forecasts/metrics": {
+      "get": {
+        "description": "Which metrics carry a dated history the forecaster can actually read.",
+        "operationId": "forecastable_metrics_api_v1_forecasts_metrics_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "title": "Response Forecastable Metrics Api V1 Forecasts Metrics Get",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Forecastable Metrics"
       }
     },
     "/api/v1/health/live": {

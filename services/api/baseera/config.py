@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 
@@ -27,6 +27,16 @@ class Settings:
     connector_private_hosts: tuple[str, ...] = ()
     connector_postgres_sslmode: str = "verify-full"
     connector_max_rows: int = 10_000
+    # AI analyst team. "auto" uses Claude when an Anthropic key is configured, then a
+    # configured local Ollama model, then the deterministic expert engine.
+    agent_provider: str = "auto"
+    anthropic_api_key: str | None = field(default=None, repr=False)
+    anthropic_model: str = "claude-opus-5"
+    anthropic_effort: str = "high"
+    anthropic_fallbacks: bool = True
+    anthropic_timeout_seconds: float = 300
+    agent_max_tool_calls: int = 12
+    agent_inline: bool = False
 
     @property
     def secure_cookies(self) -> bool:
@@ -75,4 +85,15 @@ def load_settings() -> Settings:
         connector_private_hosts=private_hosts,
         connector_postgres_sslmode=os.getenv("BASEERA_CONNECTOR_POSTGRES_SSLMODE", "verify-full"),
         connector_max_rows=int(os.getenv("BASEERA_CONNECTOR_MAX_ROWS", "10000")),
+        agent_provider=os.getenv("BASEERA_AGENT_PROVIDER", "auto").lower(),
+        anthropic_api_key=os.getenv("BASEERA_ANTHROPIC_API_KEY")
+        or os.getenv("ANTHROPIC_API_KEY")
+        or None,
+        anthropic_model=os.getenv("BASEERA_ANTHROPIC_MODEL", "claude-opus-5"),
+        anthropic_effort=os.getenv("BASEERA_ANTHROPIC_EFFORT", "high").lower(),
+        anthropic_fallbacks=os.getenv("BASEERA_ANTHROPIC_FALLBACKS", "default").lower()
+        not in {"off", "false", "0", "none"},
+        anthropic_timeout_seconds=float(os.getenv("BASEERA_ANTHROPIC_TIMEOUT_SECONDS", "300")),
+        agent_max_tool_calls=int(os.getenv("BASEERA_AGENT_MAX_TOOL_CALLS", "12")),
+        agent_inline=os.getenv("BASEERA_AGENT_INLINE", "").lower() in {"1", "true", "yes"},
     )

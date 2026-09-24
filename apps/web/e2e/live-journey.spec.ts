@@ -19,7 +19,9 @@ test("live upload → reviewed cleaning → metric → dashboard → versioned e
       name: ar ? /مساحة تجريبية خيالية/ : /fictional demo/i,
     })
     .click();
-  await expect(page).toHaveURL(/overview/);
+  await expect(page).toHaveURL(/analyst/);
+  await expect(page.locator(".ai-hero")).toBeVisible();
+  await page.goto(`/${locale}/overview`);
   await expect(page.locator(".kpi-card")).toHaveCount(7);
   await page
     .getByRole("button", {
@@ -153,4 +155,50 @@ test("live upload → reviewed cleaning → metric → dashboard → versioned e
     () => document.documentElement.scrollWidth > window.innerWidth + 1,
   );
   expect(overflow).toBe(false);
+});
+
+test("live AI analyst team: sample → full analysis → dossier → question", async ({
+  page,
+}, info) => {
+  test.skip(
+    !process.env.BASEERA_LIVE_E2E,
+    "Requires an explicitly selected local seeded API; no API mocks.",
+  );
+  test.setTimeout(240_000);
+  const ar = info.project.name.includes("ar");
+  const locale = ar ? "ar" : "en";
+  const consoleErrors: string[] = [];
+  page.on("pageerror", (error) => consoleErrors.push(error.message));
+  await page.goto(`/${locale}/login`);
+  await page
+    .getByRole("button", {
+      name: ar ? /مساحة تجريبية خيالية/ : /fictional demo/i,
+    })
+    .click();
+  await expect(page).toHaveURL(/analyst/);
+  await page.locator(".sample-card").nth(1).click();
+  // Wait for the sample to become the selected dataset before commissioning it.
+  await expect(page.locator(".ai-main__head h2")).toHaveText(
+    ar ? "تسرب المشتركين" : "Subscription churn",
+  );
+  await expect(page.locator(".launch-card button")).toBeEnabled();
+  await page.locator(".launch-card button").click();
+  await expect(page.locator(".live-run")).toBeVisible();
+  await expect(page.locator(".dossier")).toBeVisible({ timeout: 180_000 });
+  await expect(
+    page.locator(".rec-card, .priority-list li").first(),
+  ).toBeVisible();
+  await page.locator(".ai-main > .tabs button").nth(1).click();
+  await page
+    .locator(".composer textarea")
+    .fill(ar ? "ما العوامل التي تؤثر على التسرب؟" : "What drives churned?");
+  await page.locator(".composer button[type=submit]").click();
+  await expect(page.locator(".rich-answer").first()).toBeVisible({
+    timeout: 120_000,
+  });
+  await page.screenshot({
+    path: info.outputPath("ai-analyst.png"),
+    fullPage: true,
+  });
+  expect(consoleErrors).toEqual([]);
 });
